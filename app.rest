@@ -1,0 +1,11 @@
+
+POST http://localhost:9000/posts
+Content-Type: application/json
+
+{
+    "title": "another",
+    "message": "this is my message",
+    "owner": "ori"
+}
+
+###
