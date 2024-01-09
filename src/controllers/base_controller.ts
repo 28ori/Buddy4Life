@@ -9,14 +9,22 @@ export class BaseController<ModelType>{
     }
 
     async get(req: Request, res: Response) {
-        console.log("getAllStudents");
+        console.log("Get all");
         try {
-            if (req.query.name) {
-                const students = await this.model.find({ name: req.query.name });
-                res.send(students);
+            if (req.query.category) {
+
+                const objects = await this.model.find({ name: req.query.category });
+                res.send(objects);
+
+            } else if (req.query.userid) {
+
+                const objects = await this.model.find({ name: req.query.userid });
+                res.send(objects);
+
             } else {
-                const students = await this.model.find();
-                res.send(students);
+                
+                const objects = await this.model.find();
+                res.send(objects);
             }
         } catch (err) {
             res.status(500).json({ message: err.message });
@@ -24,7 +32,7 @@ export class BaseController<ModelType>{
     }
 
     async getById(req: Request, res: Response) {
-        console.log("getStudentById:" + req.params.id);
+        console.log("getById: " + req.params.id);
         try {
             const student = await this.model.findById(req.params.id);
             res.send(student);
@@ -34,7 +42,7 @@ export class BaseController<ModelType>{
     }
 
     async post(req: Request, res: Response) {
-        console.log("postStudent:" + req.body);
+        console.log("post: " + req.body);
         try {
             const obj = await this.model.create(req.body);
             res.status(201).send(obj);
@@ -45,11 +53,11 @@ export class BaseController<ModelType>{
     }
 
     putById(req: Request, res: Response) {
-        res.send("put student by id: " + req.params.id);
+        res.send("put by id: " + req.params.id);
     }
 
     deleteById(req: Request, res: Response) {
-        res.send("delete student by id: " + req.params.id);
+        res.send("delete by id: " + req.params.id);
     }
 }
 
