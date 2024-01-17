@@ -53,7 +53,7 @@ export class BaseController<ModelType>{
     }
 
     async putById(req: Request, res: Response) {
-        res.send("put by id: " + req.params.id);
+        console.log("put by id: " + req.params.id);
         try {
             const obj = await this.model.findByIdAndUpdate(req.params.id, req.body);
             res.status(200).send(obj);
@@ -62,8 +62,14 @@ export class BaseController<ModelType>{
         }
     }
 
-    deleteById(req: Request, res: Response) {
-        res.send("delete by id: " + req.params.id);
+    async deleteById(req: Request, res: Response) {
+        console.log("delete by id: " + req.params.id);
+        try {
+            const obj = await this.model.findByIdAndDelete(req.params.id);
+            res.status(200).send(obj);
+        } catch (err) {
+            console.log(err);
+        }
     }
 }
 

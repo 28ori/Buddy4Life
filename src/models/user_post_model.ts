@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IUserPost {
+  // _id?: string,
   title: string;
   category: string;
   breed: string;
