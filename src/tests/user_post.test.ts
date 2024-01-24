@@ -103,7 +103,7 @@ describe("User post tests", () => {
     await console.log("response of get all students: " + JSON.stringify(response.body))
     const rc = response.body[0];
     expect(rc.title).toBe(post1.title);
-    // expect(rc.owner).toBe(user._id);
+    expect(rc.userid).toBe(user._id);
     expect(rc.title).toBe(post1.title);
     expect(rc.description).toBe(post1.description);
     expect(rc.category).toBe(post1.category);
