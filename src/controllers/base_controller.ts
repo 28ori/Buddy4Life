@@ -32,7 +32,7 @@ export class BaseController<ModelType>{
     }
 
     async getById(req: Request, res: Response) {
-        console.log("getById: " + req.params.id);
+        console.log("getById: " + JSON.stringify(req.params.id));
         try {
             const student = await this.model.findById(req.params.id);
             res.send(student);
@@ -42,7 +42,7 @@ export class BaseController<ModelType>{
     }
 
     async post(req: Request, res: Response) {
-        console.log("post: " + req.body);
+        console.log("POST: " + JSON.stringify(req.body));
         try {
             const obj = await this.model.create(req.body);
             res.status(201).send(obj);
@@ -53,7 +53,7 @@ export class BaseController<ModelType>{
     }
 
     async putById(req: Request, res: Response) {
-        console.log("put by id: " + req.params.id);
+        console.log("put by id: " + JSON.stringify(req.params._id));
         try {
             const obj = await this.model.findByIdAndUpdate(req.params.id, req.body);
             res.status(200).send(obj);
@@ -63,7 +63,7 @@ export class BaseController<ModelType>{
     }
 
     async deleteById(req: Request, res: Response) {
-        console.log("delete by id: " + req.params.id);
+        console.log("delete by id: " + JSON.stringify(req.params.id));
         try {
             const obj = await this.model.findByIdAndDelete(req.params.id);
             res.status(200).send(obj);
