@@ -34,8 +34,8 @@ export class BaseController<ModelType>{
     async getById(req: Request, res: Response) {
         console.log("getById: " + JSON.stringify(req.params.id));
         try {
-            const student = await this.model.findById(req.params.id);
-            res.send(student);
+            const obj = await this.model.findById(req.params.id);
+            res.send(obj);
         } catch (err) {
             res.status(500).json({ message: err.message });
         }
@@ -71,6 +71,19 @@ export class BaseController<ModelType>{
             console.log(err);
         }
     }
+
+    // async isActionAuthorized(postId: String, userid: String) {
+    //     console.log("autorized action from base");
+    //     try {
+    //         const obj = await this.model.findById(postId);
+    //         console.log("object is: " + obj.userid)
+    //     } catch (err) {
+    //         console.log(err);
+    //         return false;
+    //     }
+    // }
+
+
 }
 
 const createController = <ModelType>(model: Model<ModelType>) => {
