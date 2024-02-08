@@ -6,33 +6,52 @@ import UserPost, { IUserPost } from "../models/user_post_model";
 import User, { IUser } from "../models/user_model";
 
 let app: Express;
-const user: IUser = {
+const user1: IUser = {
   email: "test@gmail.com",
   password: "123456",
   lastName: "Cohen",
   firstName: "Or",
   picture: "none",
 }
-let accessToken = "";
+
+const user2: IUser = {
+  email: "test2@gmail.com",
+  password: "12345",
+  lastName: "Bon",
+  firstName: "Ben",
+  picture: "good-picture",
+}
+
+let user1AccessToken = "";
+let user2AccessToken = "";
+
+let post1_id = ""
 
 beforeAll(async () => {
   app = await initApp();
   console.log("beforeAll");
   await UserPost.deleteMany();
 
-  await User.deleteMany({ 'email': user.email });
-  const registerResponse = await request(app).post("/auth/register").send(user);
-  user._id = registerResponse.body._id;
-  const loginResponse = await request(app).post("/auth/login").send(user);
-  accessToken = loginResponse.body.accessToken;
-  await console.log("accessToken is : " + accessToken)
+  await User.deleteMany({ 'email': user1.email });
+  await User.deleteMany({ 'email': user2.email });
+
+
+  const user1RegisterResponse = await request(app).post("/auth/register").send(user1);
+  user1._id = user1RegisterResponse.body._id;
+  const user1LoginResponse = await request(app).post("/auth/login").send(user1);
+  user1AccessToken = user1LoginResponse.body.accessToken;
+
+  const user2RegisterResponse = await request(app).post("/auth/register").send(user2);
+  user2._id = user2RegisterResponse.body._id;
+  const user2LoginResponse = await request(app).post("/auth/login").send(user2);
+  user2AccessToken = user2LoginResponse.body.accessToken;
+
 });
 
 afterAll(async () => {
   await mongoose.connection.close();
 });
 
-let post1_id = ""
 
 const post1: IUserPost = {
   title: "myFirstPost",
@@ -49,10 +68,10 @@ const post1: IUserPost = {
 
 
 describe("User post tests", () => {
-  const addStudentPost = async (post: IUserPost) => {
+  const addUserPost = async (post: IUserPost) => {
     const response = await request(app)
       .post("/post")
-      .set("Authorization", "JWT " + accessToken)
+      .set("Authorization", "JWT " + user1AccessToken)
       .send(post);
     post1_id = response.body._id
     expect(response.statusCode).toBe(201);
@@ -66,16 +85,15 @@ describe("User post tests", () => {
     expect(response.body.city).toBe(post.city);
   }
 
-  const deleteStudentPost = async (post: IUserPost) => {
+  const deleteUserPost = async (post: IUserPost, post_id: String, userAccessToken: String ) => {
     const response = await request(app)
-      .delete(`/post/${post1_id}`)
-      .set("Authorization", "JWT " + accessToken)
+      .delete(`/post/${post_id}`)
+      .set("Authorization", "JWT " + userAccessToken)
       .send(post);
-    console.log("printing delete body")
-    await console.log(JSON.stringify(response.body))
+    
     expect(response.statusCode).toBe(200);
     // expect(response.body.owner).toBe(user._id);
-    expect(response.body._id).toBe(post1_id);
+    expect(response.body._id).toBe(post_id);
     expect(response.body.title).toBe(post.title);
     expect(response.body.description).toBe(post.description);
     expect(response.body.category).toBe(post.category);
@@ -87,23 +105,23 @@ describe("User post tests", () => {
 
   test("Test Get All User posts - empty response", async () => {
     const response = await request(app).get("/post")
-    .set("Authorization", "JWT " + accessToken);
+    .set("Authorization", "JWT " + user1AccessToken);
     expect(response.statusCode).toBe(200);
     expect(response.body).toStrictEqual([]);
   });
 
   test("Test Post User post", async () => {
-    addStudentPost(post1);
+    addUserPost(post1);
   });
 
   test("Test Get All Users posts with one post in DB", async () => {
     const response = await request(app).get("/post")
-    .set("Authorization", "JWT " + accessToken);
+    .set("Authorization", "JWT " + user1AccessToken);
     expect(response.statusCode).toBe(200);
-    await console.log("response of get all students: " + JSON.stringify(response.body))
+    await console.log("response of get all: " + JSON.stringify(response.body))
     const rc = response.body[0];
     expect(rc.title).toBe(post1.title);
-    expect(rc.userid).toBe(user._id);
+    expect(rc.userid).toBe(user1._id);
     expect(rc.title).toBe(post1.title);
     expect(rc.description).toBe(post1.description);
     expect(rc.category).toBe(post1.category);
@@ -113,8 +131,18 @@ describe("User post tests", () => {
     expect(rc.city).toBe(post1.city);
   });
 
-  test("Test delete a post", async () => {
-    deleteStudentPost(post1)
+  test("Test try to delete a post of other user - should fail", async () => {
+    const response = await request(app)
+      .delete(`/post/${post1_id}`)
+      .set("Authorization", "JWT " + user2AccessToken)
+    
+    expect(response.statusCode).not.toBe(200);
+    
+
+  });
+
+  test("Test delete user's post", async () => {
+    deleteUserPost(post1, post1_id, user1AccessToken)
   });
   
 });

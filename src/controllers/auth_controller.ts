@@ -3,6 +3,14 @@ import User from '../models/user_model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+
+const getEncryptedPassword = async (password: String) => {
+    const salt = await bcrypt.genSalt(10);
+    const encryptedPassword = await bcrypt.hash(password, salt);
+
+    return encryptedPassword
+}
+
 const register = async (req: Request, res: Response) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -18,8 +26,9 @@ const register = async (req: Request, res: Response) => {
         if (userExists != null) {
             return res.status(406).send("email already exists");
         }
-        const salt = await bcrypt.genSalt(10);
-        const encryptedPassword = await bcrypt.hash(password, salt);
+        // const salt = await bcrypt.genSalt(10);
+        // const encryptedPassword = await bcrypt.hash(password, salt);
+        const encryptedPassword = await getEncryptedPassword(password)
         const userCreated = await User.create({ 'email': email, 'password': encryptedPassword, "phone": phone,
         "firstName": firstName, "lastName": lastName, "picture": picture });
         return res.status(201).send(userCreated);
@@ -122,5 +131,6 @@ export default {
     register,
     login,
     logout,
-    refresh
+    refresh,
+    getEncryptedPassword
 }

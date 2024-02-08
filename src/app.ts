@@ -4,7 +4,9 @@ import express, { Express } from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import userPostsRoute from "./routes/user_post_route";
+import userRoute from "./routes/user_route";
 import authRoute from "./routes/auth_route";
+// import dogRoute from "./routes/dog_api_route"
 
 const initApp = (): Promise<Express> => {
   const promise = new Promise<Express>((resolve) => {
@@ -18,6 +20,8 @@ const initApp = (): Promise<Express> => {
       app.use(bodyParser.urlencoded({ extended: true }));
       app.use("/post", userPostsRoute);
       app.use("/auth", authRoute);
+      app.use("/user", userRoute);
+      // app.use("/dog", dogRoute);
       resolve(app);
     });
   });
