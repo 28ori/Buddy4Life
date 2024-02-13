@@ -9,8 +9,13 @@ class UserPostController extends BaseController<IUserPost>{
     }
 
     async post(req: AuthResquest, res: Response) {
+        console.log("TZ is:" + process.env.TZ)
         const _id = req.user._id;
         req.body.userid = _id;
+        // req.body.creationTime = new Date()
+        req.body.creationTime = new Date().toLocaleString('en-US', {
+            timeZone: `${process.env.TZ}`
+          });
         super.post(req, res);
     }
 

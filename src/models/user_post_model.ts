@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 export interface IUserPost {
   _id?: string;
+  creationTime?: Date;
   title: string;
   category: string;
   breed: string;
@@ -13,6 +14,10 @@ export interface IUserPost {
 }
 
 const userPostSchema = new mongoose.Schema<IUserPost>({
+  creationTime: {
+    type: Date,
+    required: false
+  },
   title: {
     type: String,
     required: true,
