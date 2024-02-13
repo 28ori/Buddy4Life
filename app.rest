@@ -1,11 +1,97 @@
+###
 
-POST http://localhost:9000/posts
+GET http://localhost:9000/post
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWNiY2VkNjgzN2MzZjUxYWYzMmVmYTgiLCJpYXQiOjE3MDc4NTYwNDMsImV4cCI6MTcwNzg1Njk0M30.dKo4LutP7FQ_IJArYc4Xrwg_2npvS1uZEi9FxRCMjSI
+###
+
+GET http://localhost:9000/post?userid=65b22a66cfd8149a5c1dc7ab
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWIyMzAxZGU2MGZhNzdkMTM4OTQyZDUiLCJpYXQiOjE3MDYxNzY1NjB9.otcEnz2DgaaOuZU2YJaLinDjlKQKZfParL4T9rl2IYI
+
+###
+
+GET http://localhost:9000/post/65c4f0419ecbffee1676b16e
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWM0ZDlhODIyOGIxMzQ4MTc4YTlhNjIiLCJpYXQiOjE3MDc0MDUxNDcsImV4cCI6MTcwNzQwNjA0N30.mIqMIN3sGImPisP40gBKEVJNCXA5fVY-Ja7fc85So7I
+###
+
+DELETE http://localhost:9000/user/65c4d9a8228b1348178a9a62
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWM0ZDlhODIyOGIxMzQ4MTc4YTlhNjIiLCJpYXQiOjE3MDczOTk1OTksImV4cCI6MTcwNzQwMDQ5OX0.SmsOCqjMl-XzzphyanwUCQog8gRxuMsf2E4U_IpfV3I
+
+###
+
+POST http://localhost:9000/post
+Content-Type: application/json
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWM0ZDlhODIyOGIxMzQ4MTc4YTlhNjIiLCJpYXQiOjE3MDc0MDUxNDcsImV4cCI6MTcwNzQwNjA0N30.mIqMIN3sGImPisP40gBKEVJNCXA5fVY-Ja7fc85So7I
+
+{
+    "title": "timepost2",
+    "category": "adoptionRequest",
+    "breed": "somebreed",
+    "description": "A good dog",
+    "age": 22,
+    "color": "brown",
+    "city": "NYC"
+}
+
+
+
+###
+PUT http://localhost:9000/user/65baa577d5213ed70d136753
+Content-Type: application/json
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWJhYTU3N2Q1MjEzZWQ3MGQxMzY3NTMiLCJpYXQiOjE3MDY3MzA5ODgsImV4cCI6MTcwNjczMTg4OH0.2Odg7FjERbkxRu51wf-OdCRBBg1boTvV9BLFsrxXKx4
+
+{
+    "email": "hello1@gmail.com",
+    "lastName": "Hi",
+    "firstName": "changed!!",
+    "picture": "none",
+    "password": "1"
+}
+
+
+###
+
+POST http://localhost:9000/auth/register
 Content-Type: application/json
 
 {
-    "title": "another",
-    "message": "this is my message",
-    "owner": "ori"
+    "email": "hello6@gmail.com",
+    "lastName": "Hi",
+    "firstName": "ori",
+    "picture": "none",
+    "password": "1234"
 }
+
+
+###
+
+POST http://localhost:9000/auth/login
+Content-Type: application/json
+
+{
+    "email": "hello6@gmail.com",
+    "password": "1234"
+}
+
+###
+
+
+PUT http://localhost:9000/post/65b3a873bc5f8717c84f3d6e
+Content-Type: application/json
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWIyMmE2NmNmZDgxNDlhNWMxZGM3YWIiLCJpYXQiOjE3MDYyNzM0MjQsImV4cCI6MTcwNjI3NDMyNH0.mCAUhC6EVtcmH5fk_hMmDnKwGu3cghQhvPLUFUQkk1Y
+
+
+{
+    "title": "autorized good",
+    "category": "adoptionRequest",
+    "breed": "changed1",
+    "description": "A good dog",
+    "age": 18,
+    "color": "brown",
+    "city": "NYC"
+}
+
+###
+
+GET http://localhost:9000/dog/100
 
 ###
