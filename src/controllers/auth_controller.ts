@@ -34,9 +34,7 @@ const generateTokens = async (user: Document & IUser) => {
 const register = async (req: Request, res: Response) => {
     try {
         const user = await User.findOne({ email: req.body.email });
-        if (user != null) {
-            return res.status(406).send({ message: `Email '${req.body.email}' is already in use.` });
-        }
+        if (user != null) return res.status(406).send({ message: `Email '${req.body.email}' is already in use.` });
 
         req.body.password = await getEncryptedPassword(req.body.password);
         const createdUser = await User.create(req.body);
@@ -65,9 +63,7 @@ const login = async (req: Request, res: Response) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    if (!email || !password) {
-        return res.status(400).send("missing email or password");
-    }
+    if (!email || !password) return res.status(400).send("missing email or password");
 
     try {
         // Check if there is a user in the DB with the given email

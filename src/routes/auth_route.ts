@@ -160,7 +160,7 @@ router.post("/login", validationMiddleware(userCredentialsValidationSchema), aut
  *   get:
  *     summary: Logout a user
  *     tags: [Authentication]
- *     description: Need to provide the refresh token in the auth header in order to logout a user
+ *     description: Need to provide the refresh token in the auth header in order to logout a user.
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -175,7 +175,7 @@ router.get("/logout", validationMiddleware(authValidationSchema), authController
  *   get:
  *     summary: Refresh a user token
  *     tags: [Authentication]
- *     description: Need to provide the refresh token in the auth header in order to refresh user token
+ *     description: Need to provide the refresh token in the auth header in order to refresh user token.
  *     security:
  *       - bearerAuth: []
  *     responses:

@@ -9,12 +9,13 @@ class PostController extends BaseController<IPost> {
     }
 
     async post(req: AuthResquest, res: Response) {
-        const _id = req.user._id;
-        req.body.userid = _id;
-        req.body.creationTime = new Date().toLocaleString("en-US", {
-            timeZone: `${process.env.TZ}`,
-        });
-        super.post(req, res);
+        // Check if a post with the same title already exists
+        const existingPosts = await this.model.find({ title: req.body.title });
+        if (existingPosts.length)
+            return res.status(409).send({ message: "A post with the same title already exists." });
+
+        req.body.ownerId = req.user._id;
+        return super.post(req, res);
     }
 
     async putById(req: AuthResquest, res: Response) {
@@ -41,12 +42,12 @@ class PostController extends BaseController<IPost> {
         }
     }
 
-    async isActionAuthorized(postId: string, userid: string) {
+    async isActionAuthorized(postId: string, ownerId: string) {
         try {
             const post = await Post.findById(postId);
             console.log("the post content is: " + JSON.stringify(post));
-            console.log("the ACTUAL userid is: " + JSON.stringify(post.userid));
-            if (userid == post.userid) {
+            console.log("the ACTUAL ownerId is: " + JSON.stringify(post.ownerId));
+            if (ownerId == post.ownerId) {
                 return true;
             } else {
                 return false;

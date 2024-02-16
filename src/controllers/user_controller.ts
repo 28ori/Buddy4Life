@@ -33,13 +33,13 @@ class UserController extends BaseController<IUser> {
         }
     }
 
-    async isActionAuthorized(postId: string, userid: string) {
+    async isActionAuthorized(postId: string, ownerId: string) {
         try {
             const user = await User.findById(postId);
             console.log("the post content is: " + JSON.stringify(user));
-            console.log("the ACTUAL userid is: " + JSON.stringify(user._id));
+            console.log("the ACTUAL ownerId is: " + JSON.stringify(user._id));
 
-            if (userid == user._id) {
+            if (ownerId == user._id) {
                 return true;
             } else {
                 return false;

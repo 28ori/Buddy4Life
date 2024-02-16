@@ -10,10 +10,7 @@ export const userCredentialsValidationSchema: validationSchema = {
     password: {
         in: ["body"],
         isString: true,
-        isLength: {
-            options: { min: 6, max: 20 },
-            errorMessage: "Password must be a string between 6 and 20 characters long.",
-        },
+        isLength: { options: { min: 6, max: 20 } },
         errorMessage: "Password is required and must be a string between 6 and 20 characters long.",
     },
 };
@@ -23,19 +20,13 @@ export const createUserValidationSchema: validationSchema = {
     firstName: {
         in: ["body"],
         isString: true,
-        isLength: {
-            options: { min: 2 },
-            errorMessage: "firstName must be a string with at least 2 characters.",
-        },
+        isLength: { options: { min: 2 } },
         errorMessage: "First name is required and must be a string with at least 2 characters.",
     },
     lastName: {
         in: ["body"],
         isString: true,
-        isLength: {
-            options: { min: 2 },
-            errorMessage: "lastName must be a string with at least 2 characters.",
-        },
+        isLength: { options: { min: 2 } },
         errorMessage: "Last name is required and must be a string with at least 2 characters.",
     },
     imageUrl: {

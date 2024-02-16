@@ -77,11 +77,11 @@ const getById = async (req: Request, res: Response) => {
 //         }
 //     }
 
-//     // async isActionAuthorized(postId: String, userid: String) {
+//     // async isActionAuthorized(postId: String, ownerId: String) {
 //     //     console.log("autorized action from base");
 //     //     try {
 //     //         const obj = await this.model.findById(postId);
-//     //         console.log("object is: " + obj.userid)
+//     //         console.log("object is: " + obj.ownerId)
 //     //     } catch (err) {
 //     //         console.log(err);
 //     //         return false;

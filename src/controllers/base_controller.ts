@@ -15,9 +15,9 @@ export class BaseController<ModelType> {
                 objects = await this.model.find({
                     category: req.query.category,
                 });
-            } else if (req.query.userid) {
+            } else if (req.query.ownerId) {
                 objects = await this.model.find({
-                    userid: req.query.userid,
+                    ownerId: req.query.ownerId,
                 });
             } else {
                 objects = await this.model.find();
@@ -41,9 +41,11 @@ export class BaseController<ModelType> {
     async post(req: Request, res: Response) {
         try {
             const createdObj = await this.model.create(req.body);
-            res.status(201).send(createdObj);
+            return res.status(201).send(createdObj.toObject({ versionKey: false }));
         } catch (err) {
-            res.status(500).send("Fail: " + err.message);
+            return res
+                .status(500)
+                .send({ message: `Failed to create object with values: ${req.body}`, error: err.message });
         }
     }
 
@@ -65,11 +67,11 @@ export class BaseController<ModelType> {
         }
     }
 
-    // async isActionAuthorized(postId: String, userid: String) {
+    // async isActionAuthorized(postId: String, ownerId: String) {
     //     console.log("autorized action from base");
     //     try {
     //         const obj = await this.model.findById(postId);
-    //         console.log("object is: " + obj.userid)
+    //         console.log("object is: " + obj.ownerId)
     //     } catch (err) {
     //         console.log(err);
     //         return false;

@@ -55,7 +55,7 @@ const post1: IPost = {
     category: "adoptionRequest",
     breed: "somebreed",
     description: "A good dog",
-    userid: "12345",
+    ownerId: "12345",
     age: 10,
     color: "brown",
     city: "NYC",
@@ -117,7 +117,7 @@ describe("User post tests", () => {
         await console.log("response of get all: " + JSON.stringify(response.body));
         const rc = response.body[0];
         expect(rc.title).toBe(post1.title);
-        expect(rc.userid).toBe(user1._id);
+        expect(rc.ownerId).toBe(user1._id);
         expect(rc.title).toBe(post1.title);
         expect(rc.description).toBe(post1.description);
         expect(rc.category).toBe(post1.category);

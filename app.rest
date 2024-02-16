@@ -4,7 +4,7 @@ GET http://localhost:9000/post
 Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWNiY2VkNjgzN2MzZjUxYWYzMmVmYTgiLCJpYXQiOjE3MDc4NTYwNDMsImV4cCI6MTcwNzg1Njk0M30.dKo4LutP7FQ_IJArYc4Xrwg_2npvS1uZEi9FxRCMjSI
 ###
 
-GET http://localhost:9000/post?userid=65b22a66cfd8149a5c1dc7ab
+GET http://localhost:9000/post?ownerId=65b22a66cfd8149a5c1dc7ab
 Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWIyMzAxZGU2MGZhNzdkMTM4OTQyZDUiLCJpYXQiOjE3MDYxNzY1NjB9.otcEnz2DgaaOuZU2YJaLinDjlKQKZfParL4T9rl2IYI
 
 ###
