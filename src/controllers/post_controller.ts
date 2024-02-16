@@ -1,22 +1,28 @@
-import User, { IUser } from "../models/user_model";
+import Post, { IPost } from "../models/post_model";
 import { BaseController } from "./base_controller";
 import { Response } from "express";
 import { AuthResquest } from "../authentication/auth_middleware";
-import { getEncryptedPassword } from "../controllers/auth_controller";
 
-class UserController extends BaseController<IUser> {
+class PostController extends BaseController<IPost> {
     constructor() {
-        super(User);
+        super(Post);
+    }
+
+    async post(req: AuthResquest, res: Response) {
+        const _id = req.user._id;
+        req.body.userid = _id;
+        req.body.creationTime = new Date().toLocaleString("en-US", {
+            timeZone: `${process.env.TZ}`,
+        });
+        super.post(req, res);
     }
 
     async putById(req: AuthResquest, res: Response) {
-        // const autorizedResponse = await this.isActionAuthorized(req.params.id, req.user._id)
+        console.log("post id is: " + req.params.id);
+        console.log("the user asking is: " + req.user._id);
         const autorizedResponse = await this.isActionAuthorized(req.params.id, req.user._id);
         console.log(autorizedResponse);
-
         if (autorizedResponse) {
-            const raw_password = req.body.password;
-            req.body.password = await getEncryptedPassword(raw_password);
             super.putById(req, res);
         } else {
             res.status(401).send("You are not autorized for that action");
@@ -24,6 +30,8 @@ class UserController extends BaseController<IUser> {
     }
 
     async deleteById(req: AuthResquest, res: Response) {
+        console.log("post id is: " + req.params.id);
+        console.log("the user asking is: " + req.user._id);
         const autorizedResponse = await this.isActionAuthorized(req.params.id, req.user._id);
         console.log(autorizedResponse);
         if (autorizedResponse) {
@@ -35,11 +43,10 @@ class UserController extends BaseController<IUser> {
 
     async isActionAuthorized(postId: string, userid: string) {
         try {
-            const user = await User.findById(postId);
-            console.log("the post content is: " + JSON.stringify(user));
-            console.log("the ACTUAL userid is: " + JSON.stringify(user._id));
-
-            if (userid == user._id) {
+            const post = await Post.findById(postId);
+            console.log("the post content is: " + JSON.stringify(post));
+            console.log("the ACTUAL userid is: " + JSON.stringify(post.userid));
+            if (userid == post.userid) {
                 return true;
             } else {
                 return false;
@@ -51,4 +58,4 @@ class UserController extends BaseController<IUser> {
     }
 }
 
-export default new UserController();
+export default new PostController();

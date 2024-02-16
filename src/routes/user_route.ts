@@ -1,8 +1,8 @@
 import express from "express";
-const router = express.Router();
 import userController from "../controllers/user_controller";
 import authMiddleware from "../authentication/auth_middleware";
 
+const router = express.Router();
 
 // router.get("/", authMiddleware, userController.get.bind(userController));
 

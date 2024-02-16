@@ -1,125 +1,186 @@
 import express from "express";
-const router = express.Router();
 import authController from "../controllers/auth_controller";
-/**
-* @swagger
-* tags:
-*   name: Auth
-*   description: The Authentication API
-*/
+import validationMiddleware from "../validations/validation_middleware";
+import { createUserValidationSchema, userCredentialsValidationSchema } from "../models/user_model";
 
+const router = express.Router();
 
 /**
-* @swagger
-* components:
-*   securitySchemes:
-*     bearerAuth:
-*       type: http
-*       scheme: bearer
-*       bearerFormat: JWT
-*/
+ * @swagger
+ * tags:
+ *   name: Authentication
+ *   description: The Authentication API
+ */
 
 /**
-* @swagger
-* components:
-*   schemas:
-*     User:
-*       type: object
-*       required:
-*         - email
-*         - password
-*       properties:
-*         email:
-*           type: string
-*           description: The user email
-*         password:
-*           type: string
-*           description: The user password
-*       example:
-*         email: 'bob@gmail.com'
-*         password: '123456'
-*/
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 
 /**
-* @swagger
-* /auth/register:
-*   post:
-*     summary: registers a new user
-*     tags: [Auth]
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             $ref: '#/components/schemas/User'
-*     responses:
-*       200:
-*         description: The new user
-*         content:
-*           application/json:
-*             schema:
-*               $ref: '#/components/schemas/User'
-*/
-router.post("/register", authController.register);
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserCredentials:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *           description: The user email
+ *         password:
+ *           type: string
+ *           description: The user password
+ *       example:
+ *         email: 'bob@gmail.com'
+ *         password: '123456'
+ *
+ *     User:
+ *       allOf:
+ *         - $ref: '#/components/schemas/UserCredentials'
+ *         - type: object
+ *           properties:
+ *             firstName:
+ *               type: string
+ *               description: The user first name
+ *             lastName:
+ *               type: string
+ *               description: The user last name
+ *           required:
+ *             - firstName
+ *             - lastName
+ *           example:
+ *             email: 'bob@gmail.com'
+ *             password: '123456'
+ *             firstName: 'Bob'
+ *             lastName: 'Chase'
+ *
+ *     registerUserResponse:
+ *       type: object
+ *       required:
+ *         - email
+ *         - password
+ *       properties:
+ *         email:
+ *           type: string
+ *         firstName:
+ *           type: string
+ *         lastName:
+ *           type: string
+ *         refreshTokens:
+ *           type: array
+ *           items:
+ *             type: string
+ *         _id:
+ *           type: string
+ *       example:
+ *         email: "bob13@gmail.com"
+ *         firstName: "Bob"
+ *         lastName: "Chase"
+ *         refreshTokens: []
+ *         _id: "65cf49715229fd10a22292ec"
+ */
 
 /**
-* @swagger
-* components:
-*   schemas:
-*     Tokens:
-*       type: object
-*       required:
-*         - accessToken
-*         - refreshToken
-*       properties:
-*         accessToken:
-*           type: string
-*           description: The JWT access token
-*         refreshToken:
-*           type: string
-*           description: The JWT refresh token
-*       example:
-*         accessToken: '123cd123x1xx1'
-*         refreshToken: '134r2134cr1x3c'
-*/
-
-
-/**
-* @swagger
-* /auth/login:
-*   post:
-*     summary: registers a new user
-*     tags: [Auth]
-*     requestBody:
-*       required: true
-*       content:
-*         application/json:
-*           schema:
-*             $ref: '#/components/schemas/User'
-*     responses:
-*       200:
-*         description: The acess & refresh tokens
-*         content:
-*           application/json:
-*             schema:
-*               $ref: '#/components/schemas/Tokens'
-*/
-router.post("/login", authController.login);
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/User'
+ *     responses:
+ *       200:
+ *         description: Successful response of the new user registration.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/registerUserResponse'
+ */
+router.post("/register", validationMiddleware(createUserValidationSchema), authController.register);
 
 /**
-* @swagger
-* /auth/logout:
-*   get:
-*     summary: logout a user
-*     tags: [Auth]
-*     description: need to provide the refresh token in the auth header
-*     security:
-*       - bearerAuth: []
-*     responses:
-*       200:
-*         description: logout completed successfully
-*/
+ * @swagger
+ * components:
+ *   schemas:
+ *     Tokens:
+ *       type: object
+ *       required:
+ *         - accessToken
+ *         - refreshToken
+ *       properties:
+ *         accessToken:
+ *           type: string
+ *           description: The JWT access token
+ *         refreshToken:
+ *           type: string
+ *           description: The JWT refresh token
+ *       example:
+ *         accessToken: "123cd123x1xx1"
+ *         refreshToken: "134r2134cr1x3c"
+ */
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login a user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UserCredentials'
+ *     responses:
+ *       200:
+ *         description: Successful response of the user login operation, the access & refresh tokens are returned.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Tokens'
+ */
+router.post("/login", validationMiddleware(userCredentialsValidationSchema), authController.login);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   get:
+ *     summary: Logout a user
+ *     tags: [Authentication]
+ *     description: Need to provide the refresh token in the auth header
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successful response of the user logout operation
+ */
 router.get("/logout", authController.logout);
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   get:
+ *     summary: Refresh a user token
+ *     tags: [Authentication]
+ *     description: Need to provide the refresh token in the auth header
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successful response of the refresh user token operation
+ */
 router.get("/refresh", authController.refresh);
 
 export default router;
