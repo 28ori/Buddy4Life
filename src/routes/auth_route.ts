@@ -2,6 +2,7 @@ import express from "express";
 import authController from "../controllers/auth_controller";
 import validationMiddleware from "../validations/validation_middleware";
 import { createUserValidationSchema, userCredentialsValidationSchema } from "../models/user_model";
+import { authValidationSchema } from "../models/authentication_model";
 
 const router = express.Router();
 
@@ -159,14 +160,14 @@ router.post("/login", validationMiddleware(userCredentialsValidationSchema), aut
  *   get:
  *     summary: Logout a user
  *     tags: [Authentication]
- *     description: Need to provide the refresh token in the auth header
+ *     description: Need to provide the refresh token in the auth header in order to logout a user
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Successful response of the user logout operation
  */
-router.get("/logout", authController.logout);
+router.get("/logout", validationMiddleware(authValidationSchema), authController.logout);
 
 /**
  * @swagger
@@ -174,13 +175,13 @@ router.get("/logout", authController.logout);
  *   get:
  *     summary: Refresh a user token
  *     tags: [Authentication]
- *     description: Need to provide the refresh token in the auth header
+ *     description: Need to provide the refresh token in the auth header in order to refresh user token
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Successful response of the refresh user token operation
  */
-router.get("/refresh", authController.refresh);
+router.get("/refresh", validationMiddleware(authValidationSchema), authController.refresh);
 
 export default router;
