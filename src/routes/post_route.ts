@@ -2,7 +2,12 @@ import express from "express";
 import PostController from "../controllers/post_controller";
 import authMiddleware from "../authentication/auth_middleware";
 import validationMiddleware from "../validations/validation_middleware";
-import { createPostValidationSchema } from "../models/post_model";
+import {
+    createPostValidationSchema,
+    getPostsValidationSchema,
+    postIdValidationSchema,
+    updatePostValidationSchema,
+} from "../models/post_model";
 
 const router = express.Router();
 
@@ -164,7 +169,7 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/crudPostResponse'
  */
-router.get("", authMiddleware, PostController.get.bind(PostController));
+router.get("", validationMiddleware(getPostsValidationSchema), authMiddleware, PostController.get.bind(PostController));
 
 /**
  * @swagger
@@ -189,7 +194,12 @@ router.get("", authMiddleware, PostController.get.bind(PostController));
  *             schema:
  *               $ref: '#/components/schemas/crudPostResponse'
  */
-router.get("/:id", authMiddleware, PostController.getById.bind(PostController));
+router.get(
+    "/:id",
+    validationMiddleware(postIdValidationSchema),
+    authMiddleware,
+    PostController.getById.bind(PostController)
+);
 
 /**
  * @swagger
@@ -240,8 +250,8 @@ router.get("/:id", authMiddleware, PostController.getById.bind(PostController));
  */
 router.post(
     "",
-    authMiddleware,
     validationMiddleware(createPostValidationSchema),
+    authMiddleware,
     PostController.post.bind(PostController)
 );
 
@@ -298,7 +308,12 @@ router.post(
  *             schema:
  *               $ref: '#/components/schemas/crudPostResponse'
  */
-router.put("/:id", authMiddleware, PostController.putById.bind(PostController));
+router.put(
+    "/:id",
+    validationMiddleware(updatePostValidationSchema),
+    authMiddleware,
+    PostController.putById.bind(PostController)
+);
 
 /**
  * @swagger
@@ -323,6 +338,11 @@ router.put("/:id", authMiddleware, PostController.putById.bind(PostController));
  *             schema:
  *               $ref: '#/components/schemas/crudPostResponse'
  */
-router.delete("/:id", authMiddleware, PostController.deleteById.bind(PostController));
+router.delete(
+    "/:id",
+    validationMiddleware(postIdValidationSchema),
+    authMiddleware,
+    PostController.deleteById.bind(PostController)
+);
 
 export default router;

@@ -7,7 +7,6 @@ import bodyParser from "body-parser";
 import postRoute from "./routes/post_route";
 import userRoute from "./routes/user_route";
 import authRoute from "./routes/auth_route";
-import dogRoute from "./routes/dog_api_route";
 
 const allowedOrigins = ["http://localhost:5173"];
 
@@ -37,7 +36,6 @@ const initApp = (): Promise<Express> => {
             app.use("/post", postRoute);
             app.use("/auth", authRoute);
             app.use("/user", userRoute);
-            app.use("/dog", dogRoute);
 
             resolve(app);
         });

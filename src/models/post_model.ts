@@ -11,6 +11,30 @@ enum Gender {
     FEMALE = "female",
 }
 
+export const postIdValidationSchema: validationSchema = {
+    id: {
+        in: ["params"],
+        isString: true,
+        errorMessage: "id is required and must be a string.",
+    },
+};
+
+export const getPostsValidationSchema: validationSchema = {
+    category: {
+        in: ["query"],
+        optional: true,
+        isString: true,
+        isIn: { options: [Object.values(Category)] },
+        errorMessage: `Category must be a valid option. Allowed options are: ${Object.values(Category)}`,
+    },
+    ownerId: {
+        in: ["query"],
+        optional: true,
+        isString: true,
+        errorMessage: "ownerId must be a string.",
+    },
+};
+
 const dogInfoValidationSchema: validationSchema = {
     "dogInfo.name": {
         in: ["body"],
@@ -105,11 +129,7 @@ export const createPostValidationSchema: validationSchema = {
 };
 
 export const updatePostValidationSchema: validationSchema = {
-    id: {
-        in: ["query"],
-        isString: true,
-        errorMessage: "Post id is required and must be a string.",
-    },
+    ...postIdValidationSchema,
     ...createPostValidationSchema,
 };
 
