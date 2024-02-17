@@ -104,6 +104,15 @@ export const createPostValidationSchema: validationSchema = {
     ...dogInfoValidationSchema,
 };
 
+export const updatePostValidationSchema: validationSchema = {
+    id: {
+        in: ["query"],
+        isString: true,
+        errorMessage: "Post id is required and must be a string.",
+    },
+    ...createPostValidationSchema,
+};
+
 interface IDogInfo {
     name?: string;
     breed?: string;

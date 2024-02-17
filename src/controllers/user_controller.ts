@@ -12,7 +12,6 @@ class UserController extends BaseController<IUser> {
     async putById(req: AuthResquest, res: Response) {
         // const autorizedResponse = await this.isActionAuthorized(req.params.id, req.user._id)
         const autorizedResponse = await this.isActionAuthorized(req.params.id, req.user._id);
-        console.log(autorizedResponse);
 
         if (autorizedResponse) {
             const raw_password = req.body.password;

@@ -11,7 +11,6 @@ export class BaseController<ModelType> {
     }
 
     async get(req: Request, res: Response) {
-        console.log(Date());
         let filters = {};
         filters = { ...req.query };
 
@@ -50,7 +49,7 @@ export class BaseController<ModelType> {
             res.status(201).send(createdObj);
         } catch (err) {
             res.status(500).send({
-                message: `Failed to create ${this.modelName} with values: ${req.body}`,
+                message: `Failed to create ${this.modelName} with values: ${req.body}.`,
                 error: err.message,
             });
         }
@@ -58,10 +57,10 @@ export class BaseController<ModelType> {
 
     async putById(req: Request, res: Response) {
         try {
-            const obj = await this.model.findByIdAndUpdate(req.params.id, req.body);
-            res.status(200).send(obj);
+            const updatedObj = await this.model.findByIdAndUpdate(req.params.id, req.body);
+            res.status(200).send(updatedObj);
         } catch (err) {
-            res.status(500).send("Fail: " + err.message);
+            res.status(500).send({ message: `Failed to update ${this.modelName} with id '${req.params.id}'.` });
         }
     }
 
@@ -70,7 +69,7 @@ export class BaseController<ModelType> {
             const deletedObj = await this.model.findByIdAndDelete(req.params.id);
             res.status(200).send(deletedObj);
         } catch (err) {
-            res.status(200).send({ message: `Failed to delete ${this.modelName} with id '${req.params.id}'` });
+            res.status(500).send({ message: `Failed to delete ${this.modelName} with id '${req.params.id}'.` });
         }
     }
 }

@@ -80,7 +80,7 @@ const router = express.Router();
  *         - description
  *
  *
- *     createPostResponse:
+ *     crudPostResponse:
  *       type: object
  *       properties:
  *         title:
@@ -162,7 +162,7 @@ const router = express.Router();
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/createPostResponse'
+ *                 $ref: '#/components/schemas/crudPostResponse'
  */
 router.get("", authMiddleware, PostController.get.bind(PostController));
 
@@ -187,7 +187,7 @@ router.get("", authMiddleware, PostController.get.bind(PostController));
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/createPostResponse'
+ *               $ref: '#/components/schemas/crudPostResponse'
  */
 router.get("/:id", authMiddleware, PostController.getById.bind(PostController));
 
@@ -236,7 +236,7 @@ router.get("/:id", authMiddleware, PostController.getById.bind(PostController));
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/createPostResponse'
+ *               $ref: '#/components/schemas/crudPostResponse'
  */
 router.post(
     "",
@@ -245,6 +245,59 @@ router.post(
     PostController.post.bind(PostController)
 );
 
+/**
+ * @swagger
+ * /post/{id}:
+ *   put:
+ *     summary: Update a post
+ *     tags: [Posts]
+ *     description: Need to provide the refresh token in the auth header in order to update a post.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Post'
+ *           examples:
+ *             rehome:
+ *               value:
+ *                 title: 'My Dog Post'
+ *                 category: 'rehome'
+ *                 description: 'Sharing my experiences with my dog'
+ *                 dogInfo:
+ *                   name: 'Rex'
+ *                   breed: 'Golden Retriever'
+ *                   gender: 'male'
+ *                   age: 3
+ *                   weight: 30
+ *                   height: 24
+ *                   color: 'Golden'
+ *                 city: 'Dogville'
+ *             adopt:
+ *               value:
+ *                 title: 'My Dog Post'
+ *                 category: 'adopt'
+ *                 description: 'Sharing my experiences with my dog'
+ *                 dogInfo:
+ *                   breed: 'Golden Retriever'
+ *                   gender: 'female'
+ *                 city: 'Dogville'
+ *     responses:
+ *       200:
+ *         description: Successful response of the post update opreation.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/crudPostResponse'
+ */
 router.put("/:id", authMiddleware, PostController.putById.bind(PostController));
 
 /**
@@ -268,7 +321,7 @@ router.put("/:id", authMiddleware, PostController.putById.bind(PostController));
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/createPostResponse'
+ *               $ref: '#/components/schemas/crudPostResponse'
  */
 router.delete("/:id", authMiddleware, PostController.deleteById.bind(PostController));
 
