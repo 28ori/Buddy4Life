@@ -169,41 +169,44 @@ const dogInfoSchema = new mongoose.Schema<IDogInfo>({
     },
 });
 
-const postSchema = new mongoose.Schema<IPost>({
-    title: {
-        type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 50,
+const postSchema = new mongoose.Schema<IPost>(
+    {
+        title: {
+            type: String,
+            required: true,
+            minlength: 2,
+            maxlength: 50,
+        },
+        ownerId: {
+            type: String,
+            required: true,
+        },
+        category: {
+            type: String,
+            required: true,
+            enum: Category,
+        },
+        description: {
+            type: String,
+            required: true,
+            minlength: 2,
+            maxlength: 1000,
+        },
+        dogInfo: {
+            type: dogInfoSchema,
+            required: false,
+        },
+        city: {
+            type: String,
+            required: false,
+            minlength: 2,
+        },
+        imageUrl: {
+            type: String,
+            required: false,
+        },
     },
-    ownerId: {
-        type: String,
-        required: true,
-    },
-    category: {
-        type: String,
-        required: true,
-        enum: Category,
-    },
-    description: {
-        type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 1000,
-    },
-    dogInfo: {
-        type: dogInfoSchema,
-        required: false,
-    },
-    city: {
-        type: String,
-        required: false,
-        minlength: 2,
-    },
-    imageUrl: {
-        type: String,
-        required: false,
-    },
-});
+    { collection: "posts", timestamps: true, versionKey: false }
+);
 
 export default mongoose.model<IPost>("Post", postSchema);

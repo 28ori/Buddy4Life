@@ -76,7 +76,7 @@ const userSchema = new mongoose.Schema<IUser>(
             required: false,
         },
     },
-    { collection: "users", timestamps: true }
+    { collection: "users", timestamps: true, versionKey: false }
 );
 
 export default mongoose.model<IUser>("User", userSchema);

@@ -1,51 +1,58 @@
 import { Request, Response } from "express";
-import { Document, Model } from "mongoose";
+import { Model } from "mongoose";
 
 export class BaseController<ModelType> {
     model: Model<ModelType>;
-    constructor(model: Model<ModelType>) {
+    modelName: string;
+
+    constructor(model: Model<ModelType>, modelName: string) {
         this.model = model;
+        this.modelName = modelName;
     }
 
     async get(req: Request, res: Response) {
+        console.log(Date());
+        let filters = {};
+        filters = { ...req.query };
+
         try {
-            let objects: Document[];
-
-            if (req.query.category) {
-                objects = await this.model.find({
-                    category: req.query.category,
-                });
-            } else if (req.query.ownerId) {
-                objects = await this.model.find({
-                    ownerId: req.query.ownerId,
-                });
-            } else {
-                objects = await this.model.find();
-            }
-
-            res.send(objects);
+            const foundDocuments = await this.model.find(filters).exec();
+            res.status(200).json(foundDocuments);
         } catch (err) {
-            res.status(500).json({ message: err.message });
+            res.status(500).json({
+                message: `Failed to get ${this.modelName} with filters: ${filters}.`,
+                error: err.message,
+            });
         }
     }
 
     async getById(req: Request, res: Response) {
         try {
-            const obj = await this.model.findById(req.params.id);
-            res.send(obj);
+            const foundObj = await this.model.findById(req.params.id).exec();
+
+            if (foundObj == null) {
+                res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                return;
+            }
+
+            res.status(200).send(foundObj);
         } catch (err) {
-            res.status(500).json({ message: err.message });
+            res.status(500).json({
+                message: `Failed to find ${this.modelName} with id '${req.params.id}'.`,
+                error: err.message,
+            });
         }
     }
 
     async post(req: Request, res: Response) {
         try {
             const createdObj = await this.model.create(req.body);
-            return res.status(201).send(createdObj.toObject({ versionKey: false }));
+            res.status(201).send(createdObj);
         } catch (err) {
-            return res
-                .status(500)
-                .send({ message: `Failed to create object with values: ${req.body}`, error: err.message });
+            res.status(500).send({
+                message: `Failed to create ${this.modelName} with values: ${req.body}`,
+                error: err.message,
+            });
         }
     }
 
@@ -60,27 +67,10 @@ export class BaseController<ModelType> {
 
     async deleteById(req: Request, res: Response) {
         try {
-            const obj = await this.model.findByIdAndDelete(req.params.id);
-            res.status(200).send(obj);
+            const deletedObj = await this.model.findByIdAndDelete(req.params.id);
+            res.status(200).send(deletedObj);
         } catch (err) {
-            console.log(err);
+            res.status(200).send({ message: `Failed to delete ${this.modelName} with id '${req.params.id}'` });
         }
     }
-
-    // async isActionAuthorized(postId: String, ownerId: String) {
-    //     console.log("autorized action from base");
-    //     try {
-    //         const obj = await this.model.findById(postId);
-    //         console.log("object is: " + obj.ownerId)
-    //     } catch (err) {
-    //         console.log(err);
-    //         return false;
-    //     }
-    // }
 }
-
-const createController = <ModelType>(model: Model<ModelType>) => {
-    return new BaseController<ModelType>(model);
-};
-
-export default createController;

@@ -26,6 +26,13 @@ const router = express.Router();
  * @swagger
  * components:
  *   schemas:
+ *     Category:
+ *       type: string
+ *       enum:
+ *         - adopt
+ *         - rehome
+ *       description: The category of the post
+ *
  *     DogInfo:
  *       type: object
  *       properties:
@@ -59,8 +66,7 @@ const router = express.Router();
  *           type: string
  *           description: The title of the post
  *         category:
- *           type: string
- *           description: The category of the post
+ *           $ref: '#/components/schemas/Category'
  *         description:
  *           type: string
  *           description: Description for the post
@@ -72,48 +78,117 @@ const router = express.Router();
  *         - title
  *         - category
  *         - description
+ *
+ *
+ *     createPostResponse:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: The title of the post
+ *         ownerId:
+ *           type: string
+ *           description: The user id of the owner of the post
+ *         category:
+ *           $ref: '#/components/schemas/Category'
+ *         description:
+ *           type: string
+ *           description: Description for the post
+ *         dogInfo:
+ *           $ref: '#/components/schemas/DogInfo'
+ *         city:
+ *           type: string
+ *         _id:
+ *           type: string
+ *           description: ID of the newly created post
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *       required:
+ *         - title
+ *         - ownerId
+ *         - category
+ *         - description
+ *         - _id
+ *         - createdAt
+ *         - updatedAt
  *       example:
  *         title: 'My Dog Post'
- *         category: 'Pet Care'
+ *         ownerId: '65cf6b8a538966718f3e18b2'
+ *         category: 'rehome'
  *         description: 'Sharing my experiences with my dog'
  *         dogInfo:
  *           name: 'Rex'
  *           breed: 'Golden Retriever'
- *           gender: 'Male'
+ *           gender: 'male'
  *           age: 3
- *           weight: 30.5
- *           height: 24.5
+ *           weight: 30
+ *           height: 24
  *           color: 'Golden'
  *         city: 'Dogville'
- *
- *     registerUserResponse:
- *       type: object
- *       required:
- *         - email
- *         - password
- *       properties:
- *         email:
- *           type: string
- *         firstName:
- *           type: string
- *         lastName:
- *           type: string
- *         refreshTokens:
- *           type: array
- *           items:
- *             type: string
- *         _id:
- *           type: string
- *       example:
- *         email: "bob13@gmail.com"
- *         firstName: "Bob"
- *         lastName: "Chase"
- *         refreshTokens: []
- *         _id: "65cf49715229fd10a22292ec"
+ *         _id: '65d082ed9a155e7b8da0c2db'
+ *         createdAt: '2024-02-17T16:41:40.692Z'
+ *         updatedAt: '2024-02-17T16:41:40.692Z'
  */
 
-router.get("/", authMiddleware, PostController.get.bind(PostController));
+/**
+ * @swagger
+ * /post:
+ *   get:
+ *     summary: Get posts
+ *     tags: [Posts]
+ *     description: Need to provide the refresh token in the auth header in order to get posts.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         required: false
+ *         schema:
+ *           $ref: '#/components/schemas/Category'
+ *       - in: query
+ *         name: ownerId
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response of the get posts operation.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/createPostResponse'
+ */
+router.get("", authMiddleware, PostController.get.bind(PostController));
 
+/**
+ * @swagger
+ * /post/{id}:
+ *   get:
+ *     summary: Get a single post by id
+ *     tags: [Posts]
+ *     description: Need to provide the refresh token in the auth header in order to get a post.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response of the get post by id operation.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/createPostResponse'
+ */
 router.get("/:id", authMiddleware, PostController.getById.bind(PostController));
 
 /**
@@ -131,13 +206,37 @@ router.get("/:id", authMiddleware, PostController.getById.bind(PostController));
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/Post'
+ *           examples:
+ *             rehome:
+ *               value:
+ *                 title: 'My Dog Post'
+ *                 category: 'rehome'
+ *                 description: 'Sharing my experiences with my dog'
+ *                 dogInfo:
+ *                   name: 'Rex'
+ *                   breed: 'Golden Retriever'
+ *                   gender: 'male'
+ *                   age: 3
+ *                   weight: 30
+ *                   height: 24
+ *                   color: 'Golden'
+ *                 city: 'Dogville'
+ *             adopt:
+ *               value:
+ *                 title: 'My Dog Post'
+ *                 category: 'adopt'
+ *                 description: 'Sharing my experiences with my dog'
+ *                 dogInfo:
+ *                   breed: 'Golden Retriever'
+ *                   gender: 'female'
+ *                 city: 'Dogville'
  *     responses:
  *       200:
  *         description: Successful response of the new post creation.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/registerUserResponse'
+ *               $ref: '#/components/schemas/createPostResponse'
  */
 router.post(
     "",
@@ -148,6 +247,29 @@ router.post(
 
 router.put("/:id", authMiddleware, PostController.putById.bind(PostController));
 
+/**
+ * @swagger
+ * /post/{id}:
+ *   delete:
+ *     summary: Delete post by id
+ *     tags: [Posts]
+ *     description: Need to provide the refresh token in the auth header in order to delete a post.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response of the delete post by id operation.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/createPostResponse'
+ */
 router.delete("/:id", authMiddleware, PostController.deleteById.bind(PostController));
 
 export default router;

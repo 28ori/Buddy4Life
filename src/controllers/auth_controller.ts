@@ -49,8 +49,6 @@ const register = async (req: Request, res: Response) => {
                 delete record.updatedAt;
                 return record;
             },
-            versionKey: false, // Removes the "__v" field
-            flattenObjectIds: true,
         };
 
         return res.status(201).send(createdUser.toObject(toObjectOptions));
