@@ -8,10 +8,6 @@ import postRoute from "./routes/post_route";
 import userRoute from "./routes/user_route";
 import authRoute from "./routes/auth_route";
 
-const allowedOrigins = ["http://localhost:5173"];
-
-const options: cors.CorsOptions = { origin: allowedOrigins };
-
 const initApp = (): Promise<Express> => {
     const promise = new Promise<Express>((resolve) => {
         const db = mongoose.connection;
@@ -21,12 +17,10 @@ const initApp = (): Promise<Express> => {
         mongoose.connect(url!).then(() => {
             const app = express();
 
-            app.use(cors(options));
             app.use(function (req, res, next) {
-                res.setHeader("Access-Control-Allow-Origin", "*");
-                res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-                res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-                res.setHeader("Access-Control-Allow-Credentials", "true");
+                res.header("Access-Control-Allow-Origin", "*");
+                res.header("Access-Control-Allow-Methods", "*");
+                res.header("Access-Control-Allow-Headers", "*");
                 next();
             });
 
