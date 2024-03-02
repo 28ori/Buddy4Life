@@ -10,15 +10,25 @@ class UserController extends BaseController<IUser> {
     }
 
     async putById(req: AuthResquest, res: Response) {
-        // const autorizedResponse = await this.isActionAuthorized(req.params.id, req.user._id)
-        const autorizedResponse = await this.isActionAuthorized(req.params.id, req.user._id);
 
-        if (autorizedResponse) {
-            const raw_password = req.body.password;
-            req.body.password = await getEncryptedPassword(raw_password);
-            super.putById(req, res);
-        } else {
+        try {
+
+            const autorizedResponse = await this.isActionAuthorized(req.params.id, req.user._id);
+
+            if (autorizedResponse) {
+                
+                if (req.body.password) {
+                    const raw_password = req.body.password;
+                    req.body.password = await getEncryptedPassword(raw_password);
+                }
+                 
+                super.putById(req, res);
+            }
+                    
+        } catch(err) {
+
             res.status(401).send("You are not autorized for that action");
+            
         }
     }
 
