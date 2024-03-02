@@ -47,10 +47,10 @@ class PostController extends BaseController<IPost> {
         }
 
         if (this.isActionAuthorized(foundPost, req.user._id)) {
-            // Check if a post with the same title already exists
+            // Check if a post with the same title already exists (not including the current post)
             try {
                 const existingPosts = await this.model.find({ title: req.body.title });
-                if (existingPosts.length) {
+                if (existingPosts.length > 1) {
                     res.status(409).send({ message: "A post with the same title already exists." });
                     return;
                 }

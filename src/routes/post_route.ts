@@ -31,13 +31,6 @@ const router = express.Router();
  * @swagger
  * components:
  *   schemas:
- *     Category:
- *       type: string
- *       enum:
- *         - adopt
- *         - rehome
- *       description: The category of the post
- *
  *     DogInfo:
  *       type: object
  *       properties:
@@ -55,6 +48,11 @@ const router = express.Router();
  *           type: number
  *         color:
  *           type: string
+ *       required:
+ *         - name
+ *         - breed
+ *         - gender
+ *         - age
  *       example:
  *         name: 'Rex'
  *         breed: 'Golden Retriever'
@@ -70,8 +68,6 @@ const router = express.Router();
  *         title:
  *           type: string
  *           description: The title of the post
- *         category:
- *           $ref: '#/components/schemas/Category'
  *         description:
  *           type: string
  *           description: Description for the post
@@ -81,7 +77,6 @@ const router = express.Router();
  *           type: string
  *       required:
  *         - title
- *         - category
  *         - description
  *
  *
@@ -94,8 +89,6 @@ const router = express.Router();
  *         ownerId:
  *           type: string
  *           description: The user id of the owner of the post
- *         category:
- *           $ref: '#/components/schemas/Category'
  *         description:
  *           type: string
  *           description: Description for the post
@@ -115,7 +108,6 @@ const router = express.Router();
  *       required:
  *         - title
  *         - ownerId
- *         - category
  *         - description
  *         - _id
  *         - createdAt
@@ -123,7 +115,6 @@ const router = express.Router();
  *       example:
  *         title: 'My Dog Post'
  *         ownerId: '65cf6b8a538966718f3e18b2'
- *         category: 'rehome'
  *         description: 'Sharing my experiences with my dog'
  *         dogInfo:
  *           name: 'Rex'
@@ -149,11 +140,6 @@ const router = express.Router();
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: query
- *         name: category
- *         required: false
- *         schema:
- *           $ref: '#/components/schemas/Category'
  *       - in: query
  *         name: ownerId
  *         required: false
@@ -216,30 +202,18 @@ router.get(
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/Post'
- *           examples:
- *             rehome:
- *               value:
- *                 title: 'My Dog Post'
- *                 category: 'rehome'
- *                 description: 'Sharing my experiences with my dog'
- *                 dogInfo:
- *                   name: 'Rex'
- *                   breed: 'Golden Retriever'
- *                   gender: 'male'
- *                   age: 3
- *                   weight: 30
- *                   height: 24
- *                   color: 'Golden'
- *                 city: 'Dogville'
- *             adopt:
- *               value:
- *                 title: 'My Dog Post'
- *                 category: 'adopt'
- *                 description: 'Sharing my experiences with my dog'
- *                 dogInfo:
- *                   breed: 'Golden Retriever'
- *                   gender: 'female'
- *                 city: 'Dogville'
+ *           example:
+ *             title: 'My Dog Post'
+ *             description: 'Sharing my experiences with my dog'
+ *             dogInfo:
+ *               name: 'Rex'
+ *               breed: 'Golden Retriever'
+ *               gender: 'male'
+ *               age: 3
+ *               weight: 30
+ *               height: 24
+ *               color: 'Golden'
+ *             city: 'Dogville'
  *     responses:
  *       200:
  *         description: Successful response of the new post creation.
@@ -276,30 +250,18 @@ router.post(
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/Post'
- *           examples:
- *             rehome:
- *               value:
- *                 title: 'My Dog Post'
- *                 category: 'rehome'
- *                 description: 'Sharing my experiences with my dog'
- *                 dogInfo:
- *                   name: 'Rex'
- *                   breed: 'Golden Retriever'
- *                   gender: 'male'
- *                   age: 3
- *                   weight: 30
- *                   height: 24
- *                   color: 'Golden'
- *                 city: 'Dogville'
- *             adopt:
- *               value:
- *                 title: 'My Dog Post'
- *                 category: 'adopt'
- *                 description: 'Sharing my experiences with my dog'
- *                 dogInfo:
- *                   breed: 'Golden Retriever'
- *                   gender: 'female'
- *                 city: 'Dogville'
+ *           example:
+ *             title: 'My Dog Post'
+ *             description: 'Sharing my experiences with my dog'
+ *             dogInfo:
+ *               name: 'Rex'
+ *               breed: 'Golden Retriever'
+ *               gender: 'male'
+ *               age: 3
+ *               weight: 30
+ *               height: 24
+ *               color: 'Golden'
+ *             city: 'Dogville'
  *     responses:
  *       200:
  *         description: Successful response of the post update opreation.

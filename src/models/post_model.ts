@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 import { Schema as validationSchema } from "express-validator";
 
-enum Category {
-    ADOPT = "adopt",
-    REHOME = "rehome",
-}
-
 enum Gender {
     MALE = "male",
     FEMALE = "female",
@@ -20,13 +15,6 @@ export const postIdValidationSchema: validationSchema = {
 };
 
 export const getPostsValidationSchema: validationSchema = {
-    category: {
-        in: ["query"],
-        optional: true,
-        isString: true,
-        isIn: { options: [Object.values(Category)] },
-        errorMessage: `Category must be a valid option. Allowed options are: ${Object.values(Category)}`,
-    },
     ownerId: {
         in: ["query"],
         optional: true,
@@ -38,30 +26,26 @@ export const getPostsValidationSchema: validationSchema = {
 const dogInfoValidationSchema: validationSchema = {
     "dogInfo.name": {
         in: ["body"],
-        optional: true,
         isString: true,
         isLength: { options: { min: 2, max: 30 } },
-        errorMessage: "Name must be a string between 2 and 30 characters long.",
+        errorMessage: "Name is required and must be a string between 2 and 30 characters long.",
     },
     "dogInfo.breed": {
         in: ["body"],
-        optional: true,
         isString: true,
         isLength: { options: { min: 2, max: 50 } },
-        errorMessage: "Breed must be a string between 2 and 50 characters long.",
+        errorMessage: "Breed is required and must be a string between 2 and 50 characters long.",
     },
     "dogInfo.gender": {
         in: ["body"],
-        optional: true,
         isString: true,
         isIn: { options: [Object.values(Gender)] },
         errorMessage: `Gender is required and must be a valid option. Allowed options are: ${Object.values(Gender)}`,
     },
     "dogInfo.age": {
         in: ["body"],
-        optional: true,
         isInt: { options: { min: 0, max: 40 } },
-        errorMessage: "Age must be a number between 0 and 40.",
+        errorMessage: "Age is required and must be a number between 0 and 40.",
     },
     "dogInfo.weight": {
         in: ["body"],
@@ -91,14 +75,6 @@ export const createPostValidationSchema: validationSchema = {
         isLength: { options: { min: 2, max: 50 } },
         errorMessage: "Title is required and must be a string between 2 and 50 characters long.",
     },
-    category: {
-        in: ["body"],
-        isString: true,
-        isIn: { options: [Object.values(Category)] },
-        errorMessage: `Category is required and must be a valid option. Allowed options are: ${Object.values(
-            Category
-        )}`,
-    },
     description: {
         in: ["body"],
         isString: true,
@@ -119,11 +95,8 @@ export const createPostValidationSchema: validationSchema = {
     },
     dogInfo: {
         in: ["body"],
-        exists: {
-            if: (value: unknown, { req }) => req.body.category === Category.REHOME,
-            errorMessage: "dogInfo is required in case the chosen category is 'rehome'.",
-        },
         isObject: { errorMessage: "dogInfo must be valid." },
+        errorMessage: "dogInfo is required.",
     },
     ...dogInfoValidationSchema,
 };
@@ -134,10 +107,10 @@ export const updatePostValidationSchema: validationSchema = {
 };
 
 interface IDogInfo {
-    name?: string;
-    breed?: string;
-    gender?: string;
-    age?: number;
+    name: string;
+    breed: string;
+    gender: Gender;
+    age: number;
     weight?: number;
     height?: number;
     color?: string;
@@ -147,9 +120,8 @@ export interface IPost {
     _id?: string;
     title: string;
     ownerId: string;
-    category: string;
     description: string;
-    dogInfo?: IDogInfo;
+    dogInfo: IDogInfo;
     city?: string;
     imageUrl?: string;
     createdAt?: Date;
@@ -159,24 +131,24 @@ export interface IPost {
 const dogInfoSchema = new mongoose.Schema<IDogInfo>({
     name: {
         type: String,
-        required: false,
+        required: true,
         minlength: 2,
         maxlength: 30,
     },
     breed: {
         type: String,
-        required: false,
+        required: true,
         minlength: 2,
         maxlength: 50,
     },
     gender: {
         type: String,
-        required: false,
+        required: true,
         enum: ["male", "female"],
     },
     age: {
         type: Number,
-        required: false,
+        required: true,
         min: 0,
         max: 40,
     },
@@ -210,11 +182,6 @@ const postSchema = new mongoose.Schema<IPost>(
             type: String,
             required: true,
         },
-        category: {
-            type: String,
-            required: true,
-            enum: Category,
-        },
         description: {
             type: String,
             required: true,
@@ -223,7 +190,7 @@ const postSchema = new mongoose.Schema<IPost>(
         },
         dogInfo: {
             type: dogInfoSchema,
-            required: false,
+            required: true,
         },
         city: {
             type: String,
