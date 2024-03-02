@@ -8,6 +8,17 @@ class PostController extends BaseController<IPost> {
         super(Post, "post");
     }
 
+    async get(req: AuthResquest, res: Response) {
+        const filters = {
+            ...(req.query.ownerId !== undefined && { ownerId: req.query.ownerId }),
+            ...(req.query.gender !== undefined && { "dogInfo.gender": req.query.gender }),
+            ...(req.query.breed !== undefined && { "dogInfo.breed": req.query.breed }),
+            ...(req.query.city !== undefined && { city: req.query.city }),
+        };
+
+        super.get(req, res, filters);
+    }
+
     async post(req: AuthResquest, res: Response) {
         // First, check if a post with the same title already exists
         try {

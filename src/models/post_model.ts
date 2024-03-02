@@ -21,6 +21,23 @@ export const getPostsValidationSchema: validationSchema = {
         isString: true,
         errorMessage: "ownerId must be a string.",
     },
+    gender: {
+        in: ["query"],
+        optional: true,
+        isString: true,
+        isIn: { options: [Object.values(Gender)] },
+        errorMessage: `Gender must be a valid option. Allowed options are: ${Object.values(Gender)}`,
+    },
+    breed: {
+        in: ["query"],
+        optional: true,
+        isString: true,
+    },
+    city: {
+        in: ["query"],
+        optional: true,
+        isString: true,
+    },
 };
 
 const dogInfoValidationSchema: validationSchema = {

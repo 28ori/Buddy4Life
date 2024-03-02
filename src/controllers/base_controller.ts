@@ -10,9 +10,8 @@ export class BaseController<ModelType> {
         this.modelName = modelName;
     }
 
-    async get(req: Request, res: Response) {
-        let filters = {};
-        filters = { ...req.query };
+    async get(req: Request, res: Response, filters: object = null) {
+        filters = filters ?? { ...req.query };
 
         try {
             const foundDocuments = await this.model.find(filters).exec();

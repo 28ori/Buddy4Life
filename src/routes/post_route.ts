@@ -78,6 +78,7 @@ const router = express.Router();
  *       required:
  *         - title
  *         - description
+ *         - dogInfo
  *
  *
  *     crudPostResponse:
@@ -109,6 +110,7 @@ const router = express.Router();
  *         - title
  *         - ownerId
  *         - description
+ *         - dogInfo
  *         - _id
  *         - createdAt
  *         - updatedAt
@@ -142,6 +144,21 @@ const router = express.Router();
  *     parameters:
  *       - in: query
  *         name: ownerId
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: gender
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: breed
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: city
  *         required: false
  *         schema:
  *           type: string
