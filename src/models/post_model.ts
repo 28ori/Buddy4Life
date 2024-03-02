@@ -110,7 +110,7 @@ export const createPostValidationSchema: validationSchema = {
         optional: true,
         isString: true,
         isLength: { options: { min: 2 } },
-        errorMessage: "City is required and must be a string with at least 2 characters.",
+        errorMessage: "City must be a string with at least 2 characters.",
     },
     imageUrl: {
         in: ["body"],
