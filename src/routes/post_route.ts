@@ -8,6 +8,7 @@ import {
     postIdValidationSchema,
     updatePostValidationSchema,
 } from "../models/post_model";
+import { createCommentValidationSchema, commentIdValidationSchema } from "../models/comment_model";
 
 const router = express.Router();
 
@@ -62,6 +63,16 @@ const router = express.Router();
  *         height: 24
  *         color: 'Golden'
  *
+ *     Comment:
+ *       type: object
+ *       properties:
+ *         text:
+ *           type: string
+ *       required:
+ *         - text
+ *       example:
+ *         text: 'This is a comment.'
+ *
  *     Post:
  *       type: object
  *       properties:
@@ -79,6 +90,18 @@ const router = express.Router();
  *         - title
  *         - description
  *         - dogInfo
+ *       example:
+ *         title: 'My Dog Post'
+ *         description: 'Sharing my experiences with my dog'
+ *         dogInfo:
+ *           name: 'Rex'
+ *           breed: 'Golden Retriever'
+ *           gender: 'male'
+ *           age: 3
+ *           weight: 30
+ *           height: 24
+ *           color: 'Golden'
+ *         city: 'Dogville'
  *
  *
  *     crudPostResponse:
@@ -100,6 +123,10 @@ const router = express.Router();
  *         _id:
  *           type: string
  *           description: ID of the newly created post
+ *         comments:
+ *           type: array
+ *           items:
+ *             type: string
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -112,6 +139,7 @@ const router = express.Router();
  *         - description
  *         - dogInfo
  *         - _id
+ *         - comments
  *         - createdAt
  *         - updatedAt
  *       example:
@@ -128,8 +156,23 @@ const router = express.Router();
  *           color: 'Golden'
  *         city: 'Dogville'
  *         _id: '65d082ed9a155e7b8da0c2db'
+ *         comments: []
  *         createdAt: '2024-02-17T16:41:40.692Z'
  *         updatedAt: '2024-02-17T16:41:40.692Z'
+ *
+ *     CreateCommentResponse:
+ *       type: object
+ *       properties:
+ *         text:
+ *           type: string
+ *         authorId:
+ *           type: string
+ *       required:
+ *         - text
+ *         - authorId
+ *       example:
+ *         text: 'This is a comment.'
+ *         authorId: '65d0e1a36cca2b99dcc8674e'
  */
 
 /**
@@ -219,18 +262,6 @@ router.get(
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/Post'
- *           example:
- *             title: 'My Dog Post'
- *             description: 'Sharing my experiences with my dog'
- *             dogInfo:
- *               name: 'Rex'
- *               breed: 'Golden Retriever'
- *               gender: 'male'
- *               age: 3
- *               weight: 30
- *               height: 24
- *               color: 'Golden'
- *             city: 'Dogville'
  *     responses:
  *       200:
  *         description: Successful response of the new post creation.
@@ -322,6 +353,77 @@ router.delete(
     validationMiddleware(postIdValidationSchema),
     authMiddleware,
     PostController.deleteById.bind(PostController)
+);
+
+/**
+ * @swagger
+ * /post/{id}/comment:
+ *   post:
+ *     summary: Add a new comment to the post
+ *     tags: [Posts]
+ *     description: Need to provide the refresh token in the auth header in order to create a comment.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Comment'
+ *     responses:
+ *       200:
+ *         description: Successful response of the new comment creation.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CreateCommentResponse'
+ */
+router.post(
+    "/:id/comment",
+    validationMiddleware(createCommentValidationSchema),
+    authMiddleware,
+    PostController.postComment.bind(PostController)
+);
+
+/**
+ * @swagger
+ * /post/{id}/comment/{commentId}:
+ *   delete:
+ *     summary: Delete comment by post id and comment id
+ *     tags: [Posts]
+ *     description: Need to provide the refresh token in the auth header in order to delete a comment.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successful response of the delete comment operation.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CreateCommentResponse'
+ */
+router.delete(
+    "/:id/comment/:commentId",
+    validationMiddleware(commentIdValidationSchema),
+    authMiddleware,
+    PostController.deleteComment.bind(PostController)
 );
 
 export default router;

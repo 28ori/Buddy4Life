@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Schema as validationSchema } from "express-validator";
+import { IComment, commentSchema } from "./comment_model";
 
 enum Gender {
     MALE = "male",
@@ -141,6 +142,7 @@ export interface IPost {
     dogInfo: IDogInfo;
     city?: string;
     imageUrl?: string;
+    comments?: IComment[];
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -173,17 +175,20 @@ const dogInfoSchema = new mongoose.Schema<IDogInfo>({
         type: Number,
         required: false,
         min: 0,
+        default: null,
     },
     height: {
         type: Number,
         required: false,
         min: 0,
+        default: null,
     },
     color: {
         type: String,
         required: false,
         minlength: 2,
         maxlength: 30,
+        default: null,
     },
 });
 
@@ -213,10 +218,17 @@ const postSchema = new mongoose.Schema<IPost>(
             type: String,
             required: false,
             minlength: 2,
+            default: null,
         },
         imageUrl: {
             type: String,
             required: false,
+            default: null,
+        },
+        comments: {
+            type: [commentSchema],
+            required: false,
+            default: [],
         },
     },
     { collection: "posts", timestamps: true, versionKey: false }

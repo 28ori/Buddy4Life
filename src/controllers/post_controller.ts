@@ -2,7 +2,6 @@ import Post, { IPost } from "../models/post_model";
 import { BaseController } from "./base_controller";
 import { Response } from "express";
 import { AuthResquest } from "../authentication/auth_middleware";
-import { Document } from "mongoose";
 class PostController extends BaseController<IPost> {
     constructor() {
         super(Post, "post");
@@ -40,12 +39,12 @@ class PostController extends BaseController<IPost> {
     }
 
     async putById(req: AuthResquest, res: Response) {
-        let foundPost: Document<unknown, object, IPost> | null;
+        let foundPost;
 
         // First, check if the post exists
         try {
             foundPost = await this.model.findById(req.params.id).exec();
-            if (foundPost == null) {
+            if (!foundPost) {
                 res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
                 return;
             }
@@ -57,7 +56,7 @@ class PostController extends BaseController<IPost> {
             return;
         }
 
-        if (this.isActionAuthorized(foundPost, req.user._id)) {
+        if (this.isPostActionAuthorized(foundPost, req.user._id)) {
             // Check if a post with the same title already exists (not including the current post)
             try {
                 const existingPosts = await this.model.find({ title: req.body.title });
@@ -81,12 +80,12 @@ class PostController extends BaseController<IPost> {
     }
 
     async deleteById(req: AuthResquest, res: Response) {
-        let foundPost: Document<unknown, object, IPost> | null;
+        let foundPost;
 
         // First, check if the post exists
         try {
             foundPost = await this.model.findById(req.params.id).exec();
-            if (foundPost == null) {
+            if (!foundPost) {
                 res.status(200).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
                 return;
             }
@@ -98,16 +97,101 @@ class PostController extends BaseController<IPost> {
             return;
         }
 
-        if (this.isActionAuthorized(foundPost, req.user._id)) {
+        if (this.isPostActionAuthorized(foundPost, req.user._id)) {
             super.deleteById(req, res);
         } else {
             res.status(403).send({ message: "You do not have the necessary permissions to perform this action." });
         }
     }
 
-    isActionAuthorized(post, userId: string) {
+    async postComment(req: AuthResquest, res: Response) {
+        let foundPost;
+
+        // First, check if the post exists
+        try {
+            foundPost = await this.model.findById(req.params.id).exec();
+            if (!foundPost) {
+                res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                return;
+            }
+        } catch (err) {
+            res.status(500).json({
+                message: `Failed to find ${this.modelName} with id '${req.params.id}'.`,
+                error: err.message,
+            });
+            return;
+        }
+
+        // Prepare the new comment object
+        const newComment = { ...req.body, authorId: req.user._id };
+
+        try {
+            // Add the comment to the post
+            foundPost.comments.push(newComment);
+            await foundPost.save();
+            res.status(200).send(newComment);
+        } catch (err) {
+            res.status(500).send({ message: `Failed to add comment to post with id '${req.params.id}'.` });
+        }
+    }
+
+    async deleteComment(req: AuthResquest, res: Response) {
+        try {
+            let foundPost;
+
+            // First, check if the post exists
+            try {
+                foundPost = await this.model.findById(req.params.id).exec();
+                if (!foundPost) {
+                    res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                    return;
+                }
+            } catch (err) {
+                res.status(500).json({
+                    message: `Failed to find ${this.modelName} with id '${req.params.id}'.`,
+                    error: err.message,
+                });
+                return;
+            }
+
+            // Check if comment exist inside the post
+            const comment = foundPost.comments.id(req.params.commentId);
+            if (!comment) {
+                res.status(404).send({
+                    message: `Comment with id '${req.params.commentId}' was not found within the post with id '${req.params.id}'.`,
+                });
+                return;
+            }
+
+            // Check if the user is authorized to delete the comment
+            if (this.isCommentActionAuthorized(comment, req.user._id)) {
+                // Delete the comment from the post
+                const commentIndex = foundPost.comments.indexOf(comment);
+                if (commentIndex !== -1) {
+                    foundPost.comments.splice(commentIndex, 1);
+                    await foundPost.save();
+                    res.status(200).send(comment);
+                } else {
+                    res.status(404).send({
+                        message: `Comment with id '${req.params.commentId}' was not found within the post with id '${req.params.id}'.`,
+                    });
+                }
+            } else {
+                res.status(403).send({ message: "You do not have the necessary permissions to perform this action." });
+            }
+        } catch (err) {
+            res.status(500).send({ message: `Failed to add comment to post with id '${req.params.id}'.` });
+        }
+    }
+
+    isPostActionAuthorized(post, userId: string) {
         // Check if the user is the owner of the post
         return userId === post.ownerId;
+    }
+
+    isCommentActionAuthorized(comment, userId: string) {
+        // Check if the user is the author of the comment
+        return userId === comment.authorId;
     }
 }
 
