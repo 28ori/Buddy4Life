@@ -10,8 +10,15 @@ export const getEncryptedPassword = async (password: string) => {
 };
 
 export const getToken = (req: Request) => {
-    const authHeader = req.headers["authorization"];
-    return authHeader && authHeader.split(" ")[1]; // Bearer <token>
+    const token = req.cookies.accessToken;
+
+    if (token == null ) {
+
+        const authHeader = req.headers["authorization"];
+        return authHeader && authHeader.split(" ")[1]; // Bearer <token>
+    }
+
+    return token
 };
 
 const generateTokens = async (user: Document & IUser) => {
@@ -72,7 +79,20 @@ const login = async (req: Request, res: Response) => {
         const match = await bcrypt.compare(password, user.password);
         if (!match) return res.status(401).send({ message: "Email or password incorrect." });
 
+        const tokenExpirtaionTime = parseInt(process.env.JWT_EXPIRATION)
         const tokens = await generateTokens(user);
+        res.cookie("refreshToken", tokens.refreshToken, {
+            httpOnly: true,
+            secure: false,
+            path: "/",
+          });
+
+        res.cookie("accessToken", tokens.accessToken, {
+        httpOnly: true,
+        maxAge: tokenExpirtaionTime,
+        path: "/",
+        });
+
         return res.status(200).send(tokens);
     } catch (err) {
         return res.status(400).send("Login proccess failed.");
