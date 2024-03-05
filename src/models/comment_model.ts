@@ -20,6 +20,11 @@ export const createCommentValidationSchema: validationSchema = {
     },
 };
 
+export const updateCommentValidationSchema: validationSchema = {
+    ...commentIdValidationSchema,
+    ...createCommentValidationSchema,
+};
+
 export interface IComment {
     authorId: string;
     text: string;

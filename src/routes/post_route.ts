@@ -394,6 +394,47 @@ router.post(
 /**
  * @swagger
  * /post/{id}/comment/{commentId}:
+ *   put:
+ *     summary: Edit a comment in the post
+ *     tags: [Posts]
+ *     description: Need to provide the refresh token in the auth header in order to edit a comment.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Comment'
+ *     responses:
+ *       200:
+ *         description: Successful response of the edit comment operation.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CreateCommentResponse'
+ */
+router.put(
+    "/:id/comment/:commentId",
+    validationMiddleware(createCommentValidationSchema),
+    authMiddleware,
+    PostController.putComment.bind(PostController)
+);
+
+/**
+ * @swagger
+ * /post/{id}/comment/{commentId}:
  *   delete:
  *     summary: Delete comment by post id and comment id
  *     tags: [Posts]

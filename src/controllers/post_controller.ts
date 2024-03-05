@@ -135,6 +135,55 @@ class PostController extends BaseController<IPost> {
         }
     }
 
+    async putComment(req: AuthResquest, res: Response) {
+        try {
+            let foundPost;
+
+            // First, check if the post exists
+            try {
+                foundPost = await this.model.findById(req.params.id).exec();
+                if (!foundPost) {
+                    res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                    return;
+                }
+            } catch (err) {
+                res.status(500).json({
+                    message: `Failed to find ${this.modelName} with id '${req.params.id}'.`,
+                    error: err.message,
+                });
+                return;
+            }
+
+            // Check if comment exist inside the post
+            const comment = foundPost.comments.id(req.params.commentId);
+            if (!comment) {
+                res.status(404).send({
+                    message: `Comment with id '${req.params.commentId}' was not found within the post with id '${req.params.id}'.`,
+                });
+                return;
+            }
+
+            // Check if the user is authorized to edit the comment
+            if (this.isCommentActionAuthorized(comment, req.user._id)) {
+                try {
+                    // Edit the comment from the post
+                    comment.text = req.body.text;
+                    await comment.save();
+                    await foundPost.save();
+                    res.status(200).send(comment);
+                } catch (err) {
+                    res.status(500).send({
+                        message: `Failed to edit comment with id '${req.params.commentId}' in post with id '${req.params.id}'.`,
+                    });
+                }
+            } else {
+                res.status(403).send({ message: "You do not have the necessary permissions to perform this action." });
+            }
+        } catch (err) {
+            res.status(500).send({ message: `Failed to add comment to post with id '${req.params.id}'.` });
+        }
+    }
+
     async deleteComment(req: AuthResquest, res: Response) {
         try {
             let foundPost;
