@@ -28,19 +28,24 @@ export const updateCommentValidationSchema: validationSchema = {
 export interface IComment {
     authorId: string;
     text: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-export const commentSchema = new mongoose.Schema<IComment>({
-    authorId: {
-        type: String,
-        required: true,
+export const commentSchema = new mongoose.Schema<IComment>(
+    {
+        authorId: {
+            type: String,
+            required: true,
+        },
+        text: {
+            type: String,
+            required: true,
+            minlength: 1,
+            maxlength: 1000,
+        },
     },
-    text: {
-        type: String,
-        required: true,
-        minlength: 1,
-        maxlength: 1000,
-    },
-});
+    { timestamps: true }
+);
 
 export default mongoose.model<IComment>("Comment", commentSchema);

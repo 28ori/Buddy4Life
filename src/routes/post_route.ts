@@ -167,12 +167,26 @@ const router = express.Router();
  *           type: string
  *         authorId:
  *           type: string
+ *         _id:
+ *           type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
  *       required:
  *         - text
  *         - authorId
+ *         - _id
+ *         - createdAt
+ *         - updatedAt
  *       example:
- *         text: 'This is a comment.'
  *         authorId: '65d0e1a36cca2b99dcc8674e'
+ *         text: 'This is a comment.'
+ *         _id: '65d082ed9a155e7b8da0c2db'
+ *         createdAt: '2024-02-17T16:41:40.692Z'
+ *         updatedAt: '2024-02-17T16:41:40.692Z'
  */
 
 /**

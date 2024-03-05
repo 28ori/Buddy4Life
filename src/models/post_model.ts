@@ -143,8 +143,8 @@ export interface IPost {
     city?: string;
     imageUrl?: string;
     comments?: IComment[];
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const dogInfoSchema = new mongoose.Schema<IDogInfo>({

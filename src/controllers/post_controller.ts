@@ -129,7 +129,7 @@ class PostController extends BaseController<IPost> {
             // Add the comment to the post
             foundPost.comments.push(newComment);
             await foundPost.save();
-            res.status(200).send(newComment);
+            res.status(200).send(foundPost.comments[foundPost.comments.length - 1]);
         } catch (err) {
             res.status(500).send({ message: `Failed to add comment to post with id '${req.params.id}'.` });
         }
@@ -168,7 +168,6 @@ class PostController extends BaseController<IPost> {
                 try {
                     // Edit the comment from the post
                     comment.text = req.body.text;
-                    await comment.save();
                     await foundPost.save();
                     res.status(200).send(comment);
                 } catch (err) {
