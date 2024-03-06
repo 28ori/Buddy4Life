@@ -51,6 +51,19 @@ const googleSignin = async (req: Request, res: Response) => {
             }
            
             const tokens = await generateTokens(user)
+            const tokenExpirtaionTime = parseInt(process.env.JWT_EXPIRATION)
+
+            res.cookie("refreshToken", tokens.refreshToken, {
+                httpOnly: true,
+                path: "/",
+              });
+    
+            res.cookie("accessToken", tokens.accessToken, {
+            httpOnly: true,
+            maxAge: tokenExpirtaionTime,
+            path: "/",
+            });
+
             console.log("generated s tokens")
             res.status(200).send(
                 {

@@ -4,7 +4,7 @@ import authMiddleware from "../authentication/auth_middleware";
 
 const router = express.Router();
 
-// router.get("/", authMiddleware, userController.get.bind(userController));
+router.get("/current", authMiddleware, userController.getCurrent.bind(userController));
 
 router.get("/:id", authMiddleware, userController.getById.bind(userController));
 
