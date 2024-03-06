@@ -16,6 +16,8 @@ class PostController extends BaseController<IPost> {
                 res.status(409).send({ message: "A post with the same title already exists." });
                 return;
             }
+
+            req.body.ownerId = req.user._id;
         } catch (err) {
             res.status(500).json({
                 message: `Failed to check if a ${this.modelName} with the same title already exists.`,
@@ -24,7 +26,6 @@ class PostController extends BaseController<IPost> {
             return;
         }
 
-        req.body.ownerId = req.user._id;
         super.post(req, res);
     }
 
