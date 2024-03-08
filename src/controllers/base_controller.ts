@@ -29,7 +29,9 @@ export class BaseController<ModelType> {
             const foundObj = await this.model.findById(req.params.id).exec();
 
             if (foundObj == null) {
-                res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                res.status(404).send({
+                    message: `${this.modelName} with id '${req.params.id}' wat not found.`,
+                });
                 return;
             }
 
@@ -59,7 +61,9 @@ export class BaseController<ModelType> {
             const updatedObj = await this.model.findByIdAndUpdate(req.params.id, req.body);
             res.status(200).send(updatedObj);
         } catch (err) {
-            res.status(500).send({ message: `Failed to update ${this.modelName} with id '${req.params.id}'.` });
+            res.status(500).send({
+                message: `Failed to update ${this.modelName} with id '${req.params.id}'.`,
+            });
         }
     }
 
@@ -68,7 +72,9 @@ export class BaseController<ModelType> {
             const deletedObj = await this.model.findByIdAndDelete(req.params.id);
             res.status(200).send(deletedObj);
         } catch (err) {
-            res.status(500).send({ message: `Failed to delete ${this.modelName} with id '${req.params.id}'.` });
+            res.status(500).send({
+                message: `Failed to delete ${this.modelName} with id '${req.params.id}'.`,
+            });
         }
     }
 }

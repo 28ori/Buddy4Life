@@ -15,7 +15,7 @@ const router = express.Router();
 /**
  * @swagger
  * tags:
- *   name: Posts
+ *   name: Post
  */
 
 /**
@@ -194,7 +194,7 @@ const router = express.Router();
  * /post:
  *   get:
  *     summary: Get posts
- *     tags: [Posts]
+ *     tags: [Post]
  *     description: Need to provide the refresh token in the auth header in order to get posts.
  *     security:
  *       - bearerAuth: []
@@ -229,14 +229,19 @@ const router = express.Router();
  *               items:
  *                 $ref: '#/components/schemas/crudPostResponse'
  */
-router.get("", validationMiddleware(getPostsValidationSchema), authMiddleware, PostController.get.bind(PostController));
+router.get(
+    "",
+    validationMiddleware(getPostsValidationSchema),
+    authMiddleware,
+    PostController.get.bind(PostController)
+);
 
 /**
  * @swagger
  * /post/{id}:
  *   get:
  *     summary: Get a single post by id
- *     tags: [Posts]
+ *     tags: [Post]
  *     description: Need to provide the refresh token in the auth header in order to get a post.
  *     security:
  *       - bearerAuth: []
@@ -266,7 +271,7 @@ router.get(
  * /post:
  *   post:
  *     summary: Create a new post
- *     tags: [Posts]
+ *     tags: [Post]
  *     description: Need to provide the refresh token in the auth header in order to create a post.
  *     security:
  *       - bearerAuth: []
@@ -296,7 +301,7 @@ router.post(
  * /post/{id}:
  *   put:
  *     summary: Update a post
- *     tags: [Posts]
+ *     tags: [Post]
  *     description: Need to provide the refresh token in the auth header in order to update a post.
  *     security:
  *       - bearerAuth: []
@@ -344,7 +349,7 @@ router.put(
  * /post/{id}:
  *   delete:
  *     summary: Delete post by id
- *     tags: [Posts]
+ *     tags: [Post]
  *     description: Need to provide the refresh token in the auth header in order to delete a post.
  *     security:
  *       - bearerAuth: []
@@ -374,7 +379,7 @@ router.delete(
  * /post/{id}/comment:
  *   post:
  *     summary: Add a new comment to the post
- *     tags: [Posts]
+ *     tags: [Post]
  *     description: Need to provide the refresh token in the auth header in order to create a comment.
  *     security:
  *       - bearerAuth: []
@@ -410,7 +415,7 @@ router.post(
  * /post/{id}/comment/{commentId}:
  *   put:
  *     summary: Edit a comment in the post
- *     tags: [Posts]
+ *     tags: [Post]
  *     description: Need to provide the refresh token in the auth header in order to edit a comment.
  *     security:
  *       - bearerAuth: []
@@ -451,7 +456,7 @@ router.put(
  * /post/{id}/comment/{commentId}:
  *   delete:
  *     summary: Delete comment by post id and comment id
- *     tags: [Posts]
+ *     tags: [Post]
  *     description: Need to provide the refresh token in the auth header in order to delete a comment.
  *     security:
  *       - bearerAuth: []

@@ -45,7 +45,9 @@ class PostController extends BaseController<IPost> {
         try {
             foundPost = await this.model.findById(req.params.id).exec();
             if (!foundPost) {
-                res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                res.status(404).send({
+                    message: `${this.modelName} with id '${req.params.id}' wat not found.`,
+                });
                 return;
             }
         } catch (err) {
@@ -75,7 +77,9 @@ class PostController extends BaseController<IPost> {
             // Update the post
             super.putById(req, res);
         } else {
-            res.status(403).send({ message: "You do not have the necessary permissions to perform this action." });
+            res.status(403).send({
+                message: "You do not have the necessary permissions to perform this action.",
+            });
         }
     }
 
@@ -86,7 +90,9 @@ class PostController extends BaseController<IPost> {
         try {
             foundPost = await this.model.findById(req.params.id).exec();
             if (!foundPost) {
-                res.status(200).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                res.status(200).send({
+                    message: `${this.modelName} with id '${req.params.id}' wat not found.`,
+                });
                 return;
             }
         } catch (err) {
@@ -100,7 +106,9 @@ class PostController extends BaseController<IPost> {
         if (this.isPostActionAuthorized(foundPost, req.user._id)) {
             super.deleteById(req, res);
         } else {
-            res.status(403).send({ message: "You do not have the necessary permissions to perform this action." });
+            res.status(403).send({
+                message: "You do not have the necessary permissions to perform this action.",
+            });
         }
     }
 
@@ -111,7 +119,9 @@ class PostController extends BaseController<IPost> {
         try {
             foundPost = await this.model.findById(req.params.id).exec();
             if (!foundPost) {
-                res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                res.status(404).send({
+                    message: `${this.modelName} with id '${req.params.id}' wat not found.`,
+                });
                 return;
             }
         } catch (err) {
@@ -143,7 +153,9 @@ class PostController extends BaseController<IPost> {
             try {
                 foundPost = await this.model.findById(req.params.id).exec();
                 if (!foundPost) {
-                    res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                    res.status(404).send({
+                        message: `${this.modelName} with id '${req.params.id}' wat not found.`,
+                    });
                     return;
                 }
             } catch (err) {
@@ -176,7 +188,9 @@ class PostController extends BaseController<IPost> {
                     });
                 }
             } else {
-                res.status(403).send({ message: "You do not have the necessary permissions to perform this action." });
+                res.status(403).send({
+                    message: "You do not have the necessary permissions to perform this action.",
+                });
             }
         } catch (err) {
             res.status(500).send({ message: `Failed to add comment to post with id '${req.params.id}'.` });
@@ -191,7 +205,9 @@ class PostController extends BaseController<IPost> {
             try {
                 foundPost = await this.model.findById(req.params.id).exec();
                 if (!foundPost) {
-                    res.status(404).send({ message: `${this.modelName} with id '${req.params.id}' wat not found.` });
+                    res.status(404).send({
+                        message: `${this.modelName} with id '${req.params.id}' wat not found.`,
+                    });
                     return;
                 }
             } catch (err) {
@@ -225,7 +241,9 @@ class PostController extends BaseController<IPost> {
                     });
                 }
             } else {
-                res.status(403).send({ message: "You do not have the necessary permissions to perform this action." });
+                res.status(403).send({
+                    message: "You do not have the necessary permissions to perform this action.",
+                });
             }
         } catch (err) {
             res.status(500).send({ message: `Failed to add comment to post with id '${req.params.id}'.` });
