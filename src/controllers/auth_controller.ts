@@ -3,6 +3,7 @@ import User, { IUser } from "../models/user_model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
+import { OAuth2Client } from "google-auth-library";
 
 export const getEncryptedPassword = async (password: string) => {
     const salt = await bcrypt.genSalt(10);
@@ -10,10 +11,75 @@ export const getEncryptedPassword = async (password: string) => {
 };
 
 export const getToken = (req: Request) => {
-    const authHeader = req.headers["authorization"];
-    return authHeader && authHeader.split(" ")[1]; // Bearer <token>
+    const token = req.cookies.accessToken;
+
+    if (token == null ) {
+
+        const authHeader = req.headers["authorization"];
+        return authHeader && authHeader.split(" ")[1]; // Bearer <token>
+    }
+
+    return token
 };
 
+const client = new OAuth2Client();
+
+const googleSignin = async (req: Request, res: Response) => {
+    try {
+        
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+
+        const payload = ticket.getPayload();
+        const email = payload?.email;
+
+        if (email != null) {
+            let user = await User.findOne({ email: email });
+            if (user == null) {
+               
+                user = await User.create({
+                'email': email,
+                'firstName': payload?.given_name,
+                'lastName': payload?.family_name,
+                'imageUrl': payload?.picture,
+                'password': "googleAuthNoPassword"
+                });
+                console.log("created a user")
+            }
+           
+            const tokens = await generateTokens(user)
+            const tokenExpirtaionTime = parseInt(process.env.JWT_EXPIRATION)
+
+            res.cookie("refreshToken", tokens.refreshToken, {
+                httpOnly: true,
+                path: "/",
+              });
+    
+            res.cookie("accessToken", tokens.accessToken, {
+            httpOnly: true,
+            maxAge: tokenExpirtaionTime,
+            path: "/",
+            });
+
+            console.log("generated s tokens")
+            res.status(200).send(
+                {
+                    email: user.email,
+                    _id: user._id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    imageUrl: user.imageUrl,
+                    ...tokens
+                })
+        }
+    } catch (err) {
+        return res.status(400).send("error missing email or password");
+    }
+       
+}
 const generateTokens = async (user: Document & IUser) => {
     const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
     const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_REFRESH_SECRET);
@@ -72,7 +138,20 @@ const login = async (req: Request, res: Response) => {
         const match = await bcrypt.compare(password, user.password);
         if (!match) return res.status(401).send({ message: "Email or password incorrect." });
 
+        const tokenExpirtaionTime = parseInt(process.env.JWT_EXPIRATION)
         const tokens = await generateTokens(user);
+
+        res.cookie("refreshToken", tokens.refreshToken, {
+            httpOnly: true,
+            path: "/",
+          });
+
+        res.cookie("accessToken", tokens.accessToken, {
+        httpOnly: true,
+        maxAge: tokenExpirtaionTime,
+        path: "/",
+        });
+
         return res.status(200).send(tokens);
     } catch (err) {
         return res.status(400).send("Login proccess failed.");
@@ -145,4 +224,5 @@ export default {
     login,
     logout,
     refresh,
+    googleSignin
 };

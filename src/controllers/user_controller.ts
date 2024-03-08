@@ -47,6 +47,19 @@ class UserController extends BaseController<IUser> {
         }
     }
 
+    async getCurrent(req: AuthResquest, res: Response) {
+
+        try {
+            
+            const userId = req.user._id;
+            const userInfo = await User.findById(userId).select(["firstName", "lastName","email","imageUrl",]);
+            res.send(userInfo);
+  
+        } catch(err) {
+            res.status(401).send("You are not autorized for that action");
+        }
+    }
+
     async isActionAuthorized(postId: string, ownerId: string) {
         try {
             const user = await User.findById(postId);

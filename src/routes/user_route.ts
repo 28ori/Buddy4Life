@@ -74,6 +74,8 @@ const router = express.Router();
  */
 router.get("/:id", authMiddleware, userController.getById.bind(userController));
 
+router.get("/current", authMiddleware, userController.getCurrent.bind(userController));
+
 router.put("/:id", authMiddleware, userController.putById.bind(userController));
 
 router.delete("/:id", authMiddleware, userController.deleteById.bind(userController));

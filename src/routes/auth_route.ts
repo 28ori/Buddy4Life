@@ -184,4 +184,8 @@ router.get("/logout", validationMiddleware(authValidationSchema), authController
  */
 router.get("/refresh", validationMiddleware(authValidationSchema), authController.refresh);
 
+
+router.post("/google", authController.googleSignin);
+
+
 export default router;
