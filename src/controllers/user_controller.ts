@@ -11,8 +11,9 @@ class UserController extends BaseController<IUser> {
 
     async getById(req: AuthResquest, res: Response) {
         try {
+            const userId = req.params.id === "me" ? req.user._id : req.params.id;
             const foundUser = await this.model
-                .findById(req.params.id)
+                .findById(userId)
                 .select(["_id", "email", "firstName", "lastName", "imageUrl"])
                 .exec();
 
