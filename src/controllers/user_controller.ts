@@ -11,7 +11,10 @@ class UserController extends BaseController<IUser> {
 
     async getById(req: AuthResquest, res: Response) {
         try {
-            const foundUser = await this.model.findById(req.params.id).exec();
+            const foundUser = await this.model
+                .findById(req.params.id)
+                .select(["_id", "email", "firstName", "lastName", "imageUrl"])
+                .exec();
 
             if (foundUser == null) {
                 res.status(404).send({
@@ -20,8 +23,7 @@ class UserController extends BaseController<IUser> {
                 return;
             }
 
-            const { _id, email, firstName, lastName } = foundUser;
-            res.status(200).send({ _id, email, firstName, lastName });
+            res.status(200).send(foundUser);
         } catch (err) {
             res.status(500).json({
                 message: `Failed to find ${this.modelName} with id '${req.params.id}'.`,
@@ -43,19 +45,6 @@ class UserController extends BaseController<IUser> {
                 super.putById(req, res);
             }
         } catch (err) {
-            res.status(401).send("You are not autorized for that action");
-        }
-    }
-
-    async getCurrent(req: AuthResquest, res: Response) {
-
-        try {
-            
-            const userId = req.user._id;
-            const userInfo = await User.findById(userId).select(["firstName", "lastName","email","imageUrl",]);
-            res.send(userInfo);
-  
-        } catch(err) {
             res.status(401).send("You are not autorized for that action");
         }
     }
