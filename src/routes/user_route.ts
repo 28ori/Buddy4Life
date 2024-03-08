@@ -35,6 +35,8 @@ const router = express.Router();
  *           type: string
  *         lasName:
  *           type: string
+ *         imageUrl:
+ *           type: string
  *       required:
  *         - _id
  *         - email
@@ -45,6 +47,7 @@ const router = express.Router();
  *         email: Bob@gmail.com
  *         firstName: Bob
  *         lasName: Chase
+ *         imageUrl: 'http://host/url/to/image'
  */
 
 /**
