@@ -10,15 +10,13 @@ export const getEncryptedPassword = async (password: string) => {
     return await bcrypt.hash(password, salt);
 };
 
-export const getToken = (req: Request) => {
-    const token = req.cookies.accessToken;
+export const getAccessToken = (req: Request) => {
+    const authHeader = req.headers["authorization"];
+    return authHeader && authHeader.split(" ")[1]; // Bearer <token>
+};
 
-    if (token == null) {
-        const authHeader = req.headers["authorization"];
-        return authHeader && authHeader.split(" ")[1]; // Bearer <token>
-    }
-
-    return token;
+export const getRefreshToken = (req: Request) => {
+    return req.cookies.refreshToken;
 };
 
 const client = new OAuth2Client();
@@ -136,6 +134,7 @@ const login = async (req: Request, res: Response) => {
         if (!match) return res.status(401).send({ message: "Email or password incorrect." });
 
         const tokenExpirtaionTime = parseInt(process.env.JWT_EXPIRATION);
+        console.log(tokenExpirtaionTime);
         const tokens = await generateTokens(user);
 
         res.cookie("refreshToken", tokens.refreshToken, {
@@ -156,7 +155,7 @@ const login = async (req: Request, res: Response) => {
 };
 
 const logout = async (req: Request, res: Response) => {
-    const refreshToken = getToken(req);
+    const refreshToken = getRefreshToken(req);
 
     if (refreshToken == null) return res.sendStatus(401);
 
@@ -182,7 +181,7 @@ const logout = async (req: Request, res: Response) => {
 };
 
 const refresh = async (req: Request, res: Response) => {
-    const refreshToken = getToken(req);
+    const refreshToken = getRefreshToken(req);
 
     if (refreshToken == null) return res.sendStatus(401);
 
@@ -206,6 +205,18 @@ const refresh = async (req: Request, res: Response) => {
             userDb.refreshTokens = userDb.refreshTokens.filter((t) => t !== refreshToken);
             userDb.refreshTokens.push(newRefreshToken);
             await userDb.save();
+
+            const tokenExpirtaionTime = parseInt(process.env.JWT_EXPIRATION);
+            res.cookie("refreshToken", newRefreshToken, {
+                httpOnly: true,
+                path: "/",
+            });
+
+            res.cookie("accessToken", accessToken, {
+                httpOnly: true,
+                maxAge: tokenExpirtaionTime,
+                path: "/",
+            });
 
             return res.status(200).send({
                 accessToken: accessToken,

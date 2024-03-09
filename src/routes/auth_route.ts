@@ -2,7 +2,7 @@ import express from "express";
 import authController from "../controllers/auth_controller";
 import validationMiddleware from "../validations/validation_middleware";
 import { createUserValidationSchema, userCredentialsValidationSchema } from "../models/user_model";
-import { authValidationSchema } from "../models/authentication_model";
+import { refreshTokenValidationSchema } from "../models/authentication_model";
 
 const router = express.Router();
 
@@ -167,7 +167,7 @@ router.post("/login", validationMiddleware(userCredentialsValidationSchema), aut
  *       200:
  *         description: Successful response of the user logout operation
  */
-router.get("/logout", validationMiddleware(authValidationSchema), authController.logout);
+router.get("/logout", validationMiddleware(refreshTokenValidationSchema), authController.logout);
 
 /**
  * @swagger
@@ -182,10 +182,8 @@ router.get("/logout", validationMiddleware(authValidationSchema), authController
  *       200:
  *         description: Successful response of the refresh user token operation
  */
-router.get("/refresh", validationMiddleware(authValidationSchema), authController.refresh);
-
+router.get("/refresh", validationMiddleware(refreshTokenValidationSchema), authController.refresh);
 
 router.post("/google", authController.googleSignin);
-
 
 export default router;

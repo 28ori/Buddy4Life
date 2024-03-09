@@ -8,3 +8,12 @@ export const authValidationSchema: validationSchema = {
         },
     },
 };
+
+export const refreshTokenValidationSchema: validationSchema = {
+    refreshToken: {
+        in: ["cookies"],
+        isString: {
+            errorMessage: "Cookie with value refreshToken is required and must be a string.",
+        },
+    },
+};
