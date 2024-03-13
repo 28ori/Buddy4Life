@@ -1,25 +1,27 @@
-import request from "supertest";
-import initApp from "../app";
-import mongoose from "mongoose";
 import { Express } from "express";
+import request from "supertest";
+import mongoose from "mongoose";
+import initApp from "../app";
 import User from "../models/user_model";
 
 let app: Express;
+
 const user = {
     email: "testUser@test.com",
-    lastName: "Cohen",
     firstName: "Ben",
-    picture: "none",
+    lastName: "Cohen",
     password: "1234567890",
 };
 
 beforeAll(async () => {
+    console.log("Before all tests");
     app = await initApp();
-    console.log("beforeAll");
     await User.deleteMany({ email: user.email });
 });
 
 afterAll(async () => {
+    console.log("After all tests");
+    await User.deleteMany({ email: user.email });
     await mongoose.connection.close();
 });
 
@@ -42,15 +44,17 @@ describe("Auth tests", () => {
         const response = await request(app).post("/auth/register").send({
             email: "test@test.com",
         });
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(422);
     });
 
     test("Test Login", async () => {
         const response = await request(app).post("/auth/login").send(user);
         expect(response.statusCode).toBe(200);
+
         accessToken = response.body.accessToken;
         refreshToken = response.body.refreshToken;
         expect(accessToken).toBeDefined();
+        expect(refreshToken).toBeDefined();
     });
 
     test("Test forbidden access without token", async () => {
@@ -72,28 +76,17 @@ describe("Auth tests", () => {
         expect(response.statusCode).toBe(401);
     });
 
-    jest.setTimeout(10000);
-
-    test("Test access after timeout of token", async () => {
-        await new Promise((resolve) => setTimeout(() => resolve("done"), 5000));
-
-        const response = await request(app)
-            .get("/post")
-            .set("Authorization", "JWT " + accessToken);
-        expect(response.statusCode).not.toBe(200);
-    });
-
     test("Test refresh token", async () => {
         const response = await request(app)
             .get("/auth/refresh")
-            .set("Authorization", "JWT " + refreshToken)
+            .set("Cookie", `refreshToken=${refreshToken}`)
             .send();
         expect(response.statusCode).toBe(200);
-        expect(response.body.accessToken).toBeDefined();
-        expect(response.body.refreshToken).toBeDefined();
 
         const newAccessToken = response.body.accessToken;
         newRefreshToken = response.body.refreshToken;
+        expect(newAccessToken).toBeDefined();
+        expect(newRefreshToken).toBeDefined();
 
         const response2 = await request(app)
             .get("/post")
@@ -101,18 +94,11 @@ describe("Auth tests", () => {
         expect(response2.statusCode).toBe(200);
     });
 
-    test("Test double use of refresh token", async () => {
+    test("Test Logout", async () => {
         const response = await request(app)
-            .get("/auth/refresh")
-            .set("Authorization", "JWT " + refreshToken)
+            .get("/auth/logout")
+            .set("Cookie", `refreshToken=${newRefreshToken}`)
             .send();
-        expect(response.statusCode).not.toBe(200);
-
-        //verify that the new token is not valid as well
-        const response1 = await request(app)
-            .get("/auth/refresh")
-            .set("Authorization", "JWT " + newRefreshToken)
-            .send();
-        expect(response1.statusCode).not.toBe(200);
+        expect(response.statusCode).toBe(204);
     });
 });

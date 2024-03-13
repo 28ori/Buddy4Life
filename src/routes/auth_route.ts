@@ -54,6 +54,8 @@ const router = express.Router();
  *             lastName:
  *               type: string
  *               description: The user last name
+ *             imageUrl:
+ *               type: string
  *           required:
  *             - firstName
  *             - lastName

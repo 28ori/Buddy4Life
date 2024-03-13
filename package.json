@@ -5,6 +5,8 @@
     "main": "server.js",
     "scripts": {
         "test": "tsc && jest --detectOpenHandles --forceExit",
+        "testAuth": "tsc && jest --detectOpenHandles --forceExit ./src/tests/auth.test.ts",
+        "testPost": "tsc && jest --detectOpenHandles --forceExit ./src/tests/post.test.ts",
         "start": "tsc && node ./dist/src/server.js",
         "lint": "eslint . --ext .ts",
         "dev": "nodemon ./src/server.ts",

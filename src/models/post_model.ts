@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Schema as validationSchema } from "express-validator";
 import { IComment, commentSchema } from "./comment_model";
 
-enum Gender {
+export enum Gender {
     MALE = "male",
     FEMALE = "female",
 }
