@@ -104,7 +104,7 @@ router.get("/:id", authMiddleware, userController.getById.bind(userController));
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/registerUserResponse'
+ *               $ref: '#/components/schemas/getUserResponse'
  */
 router.put("/:id", authMiddleware, userController.putById.bind(userController));
 
