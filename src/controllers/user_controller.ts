@@ -50,15 +50,10 @@ class UserController extends BaseController<IUser> {
         }
     }
 
-    async isActionAuthorized(postId: string, ownerId: string) {
+    async isActionAuthorized(userId: string, currentUser: string) {
         try {
-            const user = await User.findById(postId);
-
-            if (ownerId == user._id) {
-                return true;
-            } else {
-                return false;
-            }
+            const user = await User.findById(userId);
+            return currentUser == user._id;
         } catch (err) {
             console.log(err);
             return false;
