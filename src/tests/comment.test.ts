@@ -15,7 +15,6 @@ const user: IUser = {
     imageUrl: "none",
 };
 
-
 const post = {
     title: "Dog Post Test",
     description: "Sharing my experiences with my dog",
@@ -32,9 +31,8 @@ const post = {
 };
 
 const comment = {
-    text: "my test coment"
-}
-
+    text: "my test coment",
+};
 
 let userAccessToken = "";
 
@@ -57,12 +55,10 @@ beforeAll(async () => {
     userAccessToken = userLoginResponse.body.accessToken;
 
     const response = await request<IPost>(app)
-    .post("/post")
-    .set("Authorization", "JWT " + userAccessToken)
-    .send(post);
+        .post("/post")
+        .set("Authorization", "JWT " + userAccessToken)
+        .send(post);
     createdPost = response.body;
-
-
 });
 
 afterAll(async () => {
@@ -77,9 +73,7 @@ afterAll(async () => {
 });
 
 describe("Post tests", () => {
-
     test("Test create comment", async () => {
-
         const response = await request<IPost>(app)
             .post(`/post/${createdPost._id}/comment`)
             .set("Authorization", "JWT " + userAccessToken)
@@ -91,11 +85,11 @@ describe("Post tests", () => {
     });
 
     test("Update sepecific comment", async () => {
-        const newText = "comment changed"
+        const newText = "comment changed";
         const response = await request(app)
             .put(`/post/${createdPost._id}/comment/${commentId}`)
             .set("Authorization", "JWT " + userAccessToken)
-            .send({text: newText});
+            .send({ text: newText });
         expect(response.statusCode).toBe(200);
         expect(response.body.text).toStrictEqual(newText);
     });

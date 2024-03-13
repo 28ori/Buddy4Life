@@ -13,13 +13,6 @@ const user: IUser = {
     password: "1234567890",
 };
 
-const newUser: IUser = {
-    email: "testUser@test.com",
-    firstName: "BenChanged",
-    lastName: "CohenChanged",
-    password: "123456",
-};
-
 let userAccessToken = "";
 
 beforeAll(async () => {
@@ -40,7 +33,6 @@ afterAll(async () => {
 });
 
 describe("User tests", () => {
-
     test("Test get user details", async () => {
         const response = await request(app)
             .get(`/user/${user._id}`)
@@ -57,5 +49,4 @@ describe("User tests", () => {
 
         expect(response.statusCode).toBe(200);
     });
-
 });
